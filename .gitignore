@@ -137,3 +137,6 @@ iOSInjectionProject/
 
 # Ignore GoogleServiceInfo file
 GoogleService-Info.plist
+
+# images
+*.atlas
