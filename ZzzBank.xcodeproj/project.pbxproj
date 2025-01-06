@@ -8,10 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C220C20A2D2B9AF000321039 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = C220C2092D2B9AF000321039 /* Kingfisher */; };
-		C220C20D2D2B9B1000321039 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = C220C20C2D2B9B1000321039 /* SnapKit */; };
-		C220C20F2D2B9B1000321039 /* SnapKit-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = C220C20E2D2B9B1000321039 /* SnapKit-Dynamic */; };
-		C220C2122D2B9B5800321039 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = C220C2112D2B9B5800321039 /* Alamofire */; };
-		C220C2142D2B9B5800321039 /* AlamofireDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = C220C2132D2B9B5800321039 /* AlamofireDynamic */; };
+		C295F2622D2BC40400B60FA1 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = C295F2612D2BC40400B60FA1 /* SnapKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,10 +42,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C220C20A2D2B9AF000321039 /* Kingfisher in Frameworks */,
-				C220C2122D2B9B5800321039 /* Alamofire in Frameworks */,
-				C220C2142D2B9B5800321039 /* AlamofireDynamic in Frameworks */,
-				C220C20D2D2B9B1000321039 /* SnapKit in Frameworks */,
-				C220C20F2D2B9B1000321039 /* SnapKit-Dynamic in Frameworks */,
+				C295F2622D2BC40400B60FA1 /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,10 +86,7 @@
 			name = ZzzBank;
 			packageProductDependencies = (
 				C220C2092D2B9AF000321039 /* Kingfisher */,
-				C220C20C2D2B9B1000321039 /* SnapKit */,
-				C220C20E2D2B9B1000321039 /* SnapKit-Dynamic */,
-				C220C2112D2B9B5800321039 /* Alamofire */,
-				C220C2132D2B9B5800321039 /* AlamofireDynamic */,
+				C295F2612D2BC40400B60FA1 /* SnapKit */,
 			);
 			productName = ZzzBank;
 			productReference = C220C1F02D2B999B00321039 /* ZzzBank.app */;
@@ -127,8 +118,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				C220C2082D2B9AF000321039 /* XCRemoteSwiftPackageReference "Kingfisher" */,
-				C220C20B2D2B9B1000321039 /* XCRemoteSwiftPackageReference "SnapKit" */,
-				C220C2102D2B9B5800321039 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				C295F2602D2BC40400B60FA1 /* XCRemoteSwiftPackageReference "SnapKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C220C1F12D2B999B00321039 /* Products */;
@@ -173,7 +163,6 @@
 				INFOPLIST_FILE = ZzzBank/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -201,7 +190,6 @@
 				INFOPLIST_FILE = ZzzBank/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -368,20 +356,12 @@
 				minimumVersion = 8.1.3;
 			};
 		};
-		C220C20B2D2B9B1000321039 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+		C295F2602D2BC40400B60FA1 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.7.1;
-			};
-		};
-		C220C2102D2B9B5800321039 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Alamofire/Alamofire";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.10.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -392,25 +372,10 @@
 			package = C220C2082D2B9AF000321039 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
 		};
-		C220C20C2D2B9B1000321039 /* SnapKit */ = {
+		C295F2612D2BC40400B60FA1 /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = C220C20B2D2B9B1000321039 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			package = C295F2602D2BC40400B60FA1 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
-		};
-		C220C20E2D2B9B1000321039 /* SnapKit-Dynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C220C20B2D2B9B1000321039 /* XCRemoteSwiftPackageReference "SnapKit" */;
-			productName = "SnapKit-Dynamic";
-		};
-		C220C2112D2B9B5800321039 /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C220C2102D2B9B5800321039 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
-		};
-		C220C2132D2B9B5800321039 /* AlamofireDynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C220C2102D2B9B5800321039 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = AlamofireDynamic;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
