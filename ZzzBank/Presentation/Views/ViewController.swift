@@ -28,6 +28,8 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         configureUI()
+        
+        HealthKitService.shared.getSleepData()
     }
     
     private func configureUI() {

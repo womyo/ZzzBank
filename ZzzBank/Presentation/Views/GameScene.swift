@@ -46,10 +46,10 @@ class GameScene: SKScene {
         }
         
         let firstImage = textureAtlas.textureNames.first!
-        var slime = SKSpriteNode(imageNamed: firstImage)
+        let slime = SKSpriteNode(imageNamed: firstImage)
         
         slime.size = CGSize(width: 100, height: 100)
-        slime.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
+        slime.position = CGPoint(x: 50, y: 70)
         slime.name = "slime"
         
         let slimeAnimation = SKAction.animate(with: textureArray, timePerFrame: timePerFrame)

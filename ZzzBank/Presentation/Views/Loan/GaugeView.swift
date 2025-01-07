@@ -22,10 +22,10 @@ struct GaugeView: View {
             Text("예상 피로도")
                 .foregroundColor(Color.green)
         } minimumValueLabel: {
-            Text("L")
+            Text("\(Int(minValue))")
                 .foregroundColor(Color.green)
         } maximumValueLabel: {
-            Text("H")
+            Text("\(Int(maxValue))")
                 .foregroundColor(Color.red)
         }
         .gaugeStyle(.accessoryCircular)

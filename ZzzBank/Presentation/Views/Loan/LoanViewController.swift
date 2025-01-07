@@ -13,7 +13,7 @@ class LoanViewController: UIViewController {
     
     private lazy var confirmButton: UIButton = {
         let button = UIButton()
-        button.setTitle("대출받기", for: .normal)
+        button.setTitle("대출 신청", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 10
@@ -24,11 +24,16 @@ class LoanViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        navigationItem.title = "잠 대출"
+        navigationItem.title = "잠은행"
         configureUI()
     }
     
     func configureUI() {
+        let queueSystemVC = UIHostingController(rootView: QueueNumberSystemView())
+        let queueSystemView = queueSystemVC.view!
+        view.addSubview(queueSystemView)
+        queueSystemVC.didMove(toParent: self)
+        
         let gaugeVC = UIHostingController(rootView: GaugeView())
         let gaugeView = gaugeVC.view!
         view.addSubview(gaugeView)
@@ -39,13 +44,19 @@ class LoanViewController: UIViewController {
         view.addSubview(circularSliderView)
         circularSliderVC.didMove(toParent: self)
         
+        queueSystemView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.centerX.equalToSuperview()
+        }
+        
         gaugeView.snp.makeConstraints {
             $0.trailing.equalToSuperview().offset(-16)
-            $0.bottom.equalTo(circularSliderView.snp.top).offset(-32)
+            $0.top.equalTo(queueSystemView.snp.bottom).offset(48)
         }
         
         circularSliderView.snp.makeConstraints {
-            $0.centerX.centerY.equalToSuperview()
+            $0.top.equalTo(gaugeView.snp.bottom).offset(16)
+            $0.centerX.equalToSuperview()
         }
         
         view.addSubview(confirmButton)
