@@ -6,10 +6,12 @@
 //
 
 import Foundation
+import RealmSwift
 
 final class LoanViewModel: ObservableObject {
     private let realm = RealmManager.shared
     @Published var timeValue: CGFloat = 0.0
+    @Published var loanRecords = []
     
     func saveLoan() {
         let loan = LoanRecord()
@@ -29,5 +31,9 @@ final class LoanViewModel: ObservableObject {
         realm.update(loanLimit) { loanLimit in
             loanLimit.limitTime -= Int(self.timeValue)
         }
+    }
+    
+    func getLoanRecords() -> Results<LoanRecord> {
+        return realm.read(LoanRecord.self)
     }
 }

@@ -1,15 +1,6 @@
 {
-  "originHash" : "a3fd74b92f01dbcc3b7514c6f5f18de1d1c40dd7c3f9edbf48b92f5ea53c2e8b",
+  "originHash" : "f1a442f71eada14afbdb46480c0366ce1b2d6201f212c4aba57ec096a10f7871",
   "pins" : [
-    {
-      "identity" : "kingfisher",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/onevcat/Kingfisher.git",
-      "state" : {
-        "revision" : "e6749919f9761d573d37a7d7e78b1b854c191d7f",
-        "version" : "8.1.3"
-      }
-    },
     {
       "identity" : "realm-core",
       "kind" : "remoteSourceControl",
@@ -26,15 +17,6 @@
       "state" : {
         "branch" : "master",
         "revision" : "1f09fb14dd9d275b5686016fe8508d491b87cb0b"
-      }
-    },
-    {
-      "identity" : "rxswift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ReactiveX/RxSwift",
-      "state" : {
-        "revision" : "c7c7d2cf50a3211fe2843f76869c698e4e417930",
-        "version" : "6.8.0"
       }
     },
     {

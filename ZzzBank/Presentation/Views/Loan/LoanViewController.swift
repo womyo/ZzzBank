@@ -10,6 +10,7 @@ import SwiftUI
 import SnapKit
 
 class LoanViewController: UIViewController {
+    private var viewModel: LoanViewModel
     
     private lazy var confirmButton: UIButton = {
         let button = UIButton()
@@ -17,9 +18,26 @@ class LoanViewController: UIViewController {
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 10
-        
+        button.addAction(UIAction { [weak self] _ in
+            if let timeValue = self?.viewModel.timeValue, timeValue > 0 {
+                self?.viewModel.saveLoan()
+                self?.viewModel.updateLoanLimit()
+                self?.navigationController?.popViewController(animated: true)
+            } else {
+                
+            }
+        }, for: .touchUpInside)
         return button
     }()
+    
+    init(viewModel: LoanViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,7 +57,7 @@ class LoanViewController: UIViewController {
         view.addSubview(gaugeView)
         gaugeVC.didMove(toParent: self)
         
-        let circularSliderVC = UIHostingController(rootView: CircularSliderView())
+        let circularSliderVC = UIHostingController(rootView: CircularSliderView(viewModel: viewModel))
         let circularSliderView = circularSliderVC.view!
         view.addSubview(circularSliderView)
         circularSliderVC.didMove(toParent: self)
