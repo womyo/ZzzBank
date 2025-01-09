@@ -13,6 +13,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         HealthKitService.shared.configure()
         
+        let userDefaults = UserDefaults.standard
+        
+        if userDefaults.value(forKey: "appFirstOpen") == nil {
+            userDefaults.setValue(true, forKey: "appFirstOpen")
+            
+            let loanLimit = LoanLimit()
+            loanLimit.limitTime = 24
+            RealmManager.shared.write(loanLimit)
+        }
         return true
     }
 
