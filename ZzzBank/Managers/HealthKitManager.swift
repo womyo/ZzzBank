@@ -7,8 +7,8 @@
 
 import HealthKit
 
-class HealthKitService {
-    static let shared = HealthKitService()
+class HealthKitManager {
+    static let shared = HealthKitManager()
     let healthStore = HKHealthStore()
     
     let read = Set([HKCategoryType.categoryType(forIdentifier: .sleepAnalysis)!])
