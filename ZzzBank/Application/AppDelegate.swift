@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import BackgroundTasks
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -22,6 +23,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             loanLimit.limitTime = 24
             RealmManager.shared.write(loanLimit)
         }
+        
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.example.updateLoanRecords", using: nil) { task in
+            self.handleBackgroundTask(task: task as! BGAppRefreshTask)
+        }
+        
+//        print(RealmManager.shared.getLocationOfDefaultRealm())
         return true
     }
 
@@ -38,7 +45,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
-
-
+    
+    func handleBackgroundTask(task: BGAppRefreshTask) {
+        let viewModel = LoanViewModel()
+        let calendar = Calendar.current
+        
+        viewModel.getLoanRecords().enumerated().forEach { index, loanRecord in
+            let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: calendar.startOfDay(for: loanRecord.date))
+            
+            if let days = dateComponents.day, Date() > loanRecord.date {
+                viewModel.updateLoanRecords(index: index, overdueDays: abs(days))
+            }
+        }
+        scheduleBackgroundTask()
+        task.setTaskCompleted(success: true)
+    }
+    
+    func scheduleBackgroundTask() {
+        let request = BGAppRefreshTaskRequest(identifier: "com.example.updateLoanRecords")
+        request.earliestBeginDate = Calendar.current.startOfDay(for: Date()).addingTimeInterval(24*60*60)
+        do {
+            try BGTaskScheduler.shared.submit(request)
+        } catch {
+            print("Unable to schedule background task: \(error.localizedDescription)")
+        }
+    }
 }
 

@@ -49,12 +49,20 @@ class LoanRecordTableViewCell: UITableViewCell {
         loanTime.text = "대출 시간: \(loanRecord.loanTime)"
         
         let calendar = Calendar.current
-        let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: calendar.startOfDay(for: loanRecord.date))
+        let today = calendar.startOfDay(for: Date())
+        let loanDate = calendar.startOfDay(for: loanRecord.date)
+        let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: today), to: calendar.startOfDay(for: loanDate))
         
         if let days = dateComponents.day {
-            loanStatusLabel.text = loanRecord.date > Date() ? "상환 마감까지 \(days)일" : "상환 마감 \(abs(days))일 초과!"
+            if loanDate > today {
+                loanStatusLabel.text = "상환 마감까지 \(days)일"
+            } else if loanDate == today {
+                loanStatusLabel.text = "상환 마감 당일"
+            } else {
+                loanStatusLabel.text = "상환 마감 \(abs(days))일 초과!"
+            }
             
-            if Date() > loanRecord.date {
+            if loanDate < today {
                 date.text = "연체 이자: \(loanRecord.overdueInterest)"
             }
         }
