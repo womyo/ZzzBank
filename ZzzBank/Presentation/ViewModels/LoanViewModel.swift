@@ -29,7 +29,7 @@ final class LoanViewModel: ObservableObject {
         let loanLimit = realm.read(LoanLimit.self)[0]
         
         realm.update(loanLimit) { loanLimit in
-            loanLimit.limitTime -= Int(self.timeValue)
+            loanLimit.limitTime -= self.timeValue
         }
     }
     
@@ -39,37 +39,50 @@ final class LoanViewModel: ObservableObject {
     
     func updateLoanRecords(index: Int, overdueDays: Int) {
         let loanRecord = realm.read(LoanRecord.self)[index]
-        var overdueInterest: Double = 0
         
         realm.update(loanRecord) { loanRecord in
-            for i in 1...overdueDays {
-                overdueInterest += Double(loanRecord.loanTime) * Double(i) * 0.2
-            }
-            loanRecord.overdueInterest = overdueInterest
+            loanRecord.overdueInterest += Double(loanRecord.loanTime) * Double(overdueDays) * 0.2
         }
     }
     
-    func payLoad(index: Int, amount: Double) {
-        let loanRecord = realm.read(LoanRecord.self)[index]
+    func payLoad(amount: Double) {
+        let loanLimit = realm.read(LoanLimit.self)[0]
+        let loanRecords = realm.read(LoanRecord.self)
         var remainingAmount = amount
         
-        realm.update(loanRecord) { loanRecord in
-            if loanRecord.overdueInterest > 0 {
-                if remainingAmount >= loanRecord.overdueInterest {
-                    remainingAmount -= loanRecord.overdueInterest
-                    loanRecord.overdueInterest = 0
-                } else {
-                    loanRecord.overdueInterest -= remainingAmount
-                    remainingAmount = 0
+        for loanRecord in loanRecords {
+            var shouldDelete = false
+            guard remainingAmount > 0 else { return }
+            
+            realm.update(loanRecord) { loanRecord in
+                // 연체 이자 상환
+                if loanRecord.overdueInterest > 0 {
+                    if remainingAmount >= loanRecord.overdueInterest {
+                        remainingAmount -= loanRecord.overdueInterest
+                        loanRecord.overdueInterest = 0
+                    } else {
+                        loanRecord.overdueInterest -= remainingAmount
+                        remainingAmount = 0
+                    }
+                }
+                
+                // 원금(잠) 상환
+                if remainingAmount > 0 && loanRecord.loanTime > 0 {
+                    if remainingAmount >= loanRecord.loanTime {
+                        remainingAmount -= loanRecord.loanTime
+                        loanLimit.limitTime += loanRecord.loanTime
+                        loanRecord.loanTime = 0
+                        shouldDelete = true
+                    } else {
+                        loanRecord.loanTime -= remainingAmount
+                        loanLimit.limitTime += remainingAmount
+                        remainingAmount = 0
+                    }
                 }
             }
             
-            if remainingAmount > 0 && loanRecord.loanTime > 0 {
-                if remainingAmount >= loanRecord.loanTime {
-                    loanRecord.loanTime = 0
-                } else {
-                    loanRecord.loanTime -= remainingAmount
-                }
+            if shouldDelete {
+                self.realm.delete(loanRecord)
             }
         }
     }
