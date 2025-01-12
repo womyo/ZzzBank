@@ -13,6 +13,7 @@ class LoanRecordTableViewCell: UITableViewCell {
     
     private let loanTime = UILabel()
     private let date = UILabel()
+    private let loanStatusLabel = UILabel()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -26,6 +27,7 @@ class LoanRecordTableViewCell: UITableViewCell {
     private func configureUI() {
         contentView.addSubview(loanTime)
         contentView.addSubview(date)
+        contentView.addSubview(loanStatusLabel)
         
         loanTime.snp.makeConstraints {
             $0.leading.equalTo(contentView.snp.leading).offset(16)
@@ -36,15 +38,26 @@ class LoanRecordTableViewCell: UITableViewCell {
             $0.leading.equalTo(loanTime.snp.trailing).offset(16)
             $0.centerY.equalToSuperview()
         }
+        
+        loanStatusLabel.snp.makeConstraints {
+            $0.leading.equalTo(date.snp.trailing).offset(16)
+            $0.centerY.equalToSuperview()
+        }
     }
     
     func configure(with loanRecord: LoanRecord) {
-        loanTime.text = String(loanRecord.loanTime)
+        loanTime.text = "대출 시간: \(loanRecord.loanTime)"
         
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss" // 원하는 날짜 형식 지정
-        let dateString = dateFormatter.string(from: loanRecord.date)
-        date.text = dateString
+        let calendar = Calendar.current
+        let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: calendar.startOfDay(for: loanRecord.date))
+        
+        if let days = dateComponents.day {
+            loanStatusLabel.text = loanRecord.date > Date() ? "상환 마감까지 \(days)일" : "상환 마감 \(abs(days))일 초과!"
+            
+            if Date() > loanRecord.date {
+                date.text = "연체 이자: \(loanRecord.overdueInterest)"
+            }
+        }
     }
 
 }

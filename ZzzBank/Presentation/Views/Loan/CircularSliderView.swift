@@ -63,6 +63,9 @@ struct CircularSliderView: View {
                 }
             }
         }
+        .task {
+            viewModel.timeValue = 0.0
+        }
     }
     
     private func change(location: CGPoint) {

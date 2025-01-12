@@ -35,8 +35,6 @@ class LoanRecordViewController: UIViewController {
         super.viewDidLoad()
         
         configureUI()
-        
-//        print(viewModel.getLoanRecord()[0].loanTime)
     }
     
     private func configureUI() {
@@ -61,6 +59,16 @@ extension LoanRecordViewController: UITableViewDataSource, UITableViewDelegate {
         }
         
         let loanRecord = viewModel.getLoanRecords()[indexPath.row]
+        
+        let calendar = Calendar.current
+        let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: calendar.startOfDay(for: loanRecord.date))
+        
+        if let days = dateComponents.day {
+            if Date() > loanRecord.date {
+                viewModel.updateLoanRecords(index: indexPath.row, overdueDays: abs(days))
+            }
+        }
+        
         cell.configure(with: loanRecord)
         
         return cell
