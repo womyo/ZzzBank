@@ -28,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self.handleBackgroundTask(task: task as! BGAppRefreshTask)
         }
         
-//        print(RealmManager.shared.getLocationOfDefaultRealm())
+        print(RealmManager.shared.getLocationOfDefaultRealm())
         return true
     }
 
@@ -47,14 +47,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func handleBackgroundTask(task: BGAppRefreshTask) {
-        let viewModel = LoanViewModel()
-        let calendar = Calendar.current
-        
-        viewModel.getLoanRecords().enumerated().forEach { index, loanRecord in
-            let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: calendar.startOfDay(for: loanRecord.date))
+        DispatchQueue.main.async { 
+            let viewModel = LoanViewModel()
+            let calendar = Calendar.current
             
-            if let days = dateComponents.day, Date() > loanRecord.date {
-                viewModel.updateLoanRecords(index: index, overdueDays: abs(days))
+            viewModel.getLoanRecords().enumerated().forEach { index, loanRecord in
+                let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: calendar.startOfDay(for: loanRecord.date))
+                
+                if let days = dateComponents.day, Date() > loanRecord.date {
+                    viewModel.updateLoanRecords(index: index, overdueDays: abs(days))
+                }
             }
         }
         scheduleBackgroundTask()
@@ -63,7 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func scheduleBackgroundTask() {
         let request = BGAppRefreshTaskRequest(identifier: "com.example.updateLoanRecords")
-        request.earliestBeginDate = Calendar.current.startOfDay(for: Date()).addingTimeInterval(24*60*60)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 60 * 60)
         do {
             try BGTaskScheduler.shared.submit(request)
         } catch {

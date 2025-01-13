@@ -19,6 +19,7 @@ final class RealmManager: DataBase {
     static let shared = RealmManager()
     private let realm = try! Realm()
     
+    private init() {}
     func read<T: Object>(_ object: T.Type) -> RealmSwift.Results<T> {
         return realm.objects(object)
     }

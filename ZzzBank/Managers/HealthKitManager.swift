@@ -14,6 +14,8 @@ class HealthKitManager {
     let read = Set([HKCategoryType.categoryType(forIdentifier: .sleepAnalysis)!])
     let share = Set([HKCategoryType.categoryType(forIdentifier: .sleepAnalysis)!])
     
+    private init() {}
+    
     func configure() {
         if HKHealthStore.isHealthDataAvailable() {
             requestAuthorization()

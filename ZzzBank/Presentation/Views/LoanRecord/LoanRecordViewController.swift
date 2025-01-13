@@ -95,6 +95,15 @@ extension LoanRecordViewController: UITableViewDataSource, UITableViewDelegate {
         
         let loanRecord = viewModel.getLoanRecords()[indexPath.row]
         cell.configure(with: loanRecord)
+//        let calendar = Calendar.current
+//        
+//        viewModel.getLoanRecords().enumerated().forEach { index, loanRecord in
+//            let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: calendar.startOfDay(for: loanRecord.date))
+//            
+//            if let days = dateComponents.day, Date() > loanRecord.date {
+//                viewModel.updateLoanRecords(index: index, overdueDays: abs(days))
+//            }
+//        }
         
         return cell
     }
