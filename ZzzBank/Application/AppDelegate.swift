@@ -18,9 +18,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if userDefaults.value(forKey: "appFirstOpen") == nil {
             userDefaults.setValue(true, forKey: "appFirstOpen")
+            userDefaults.setValue(8, forKey: "personSleep")
             
             let loanLimit = LoanLimit()
-            loanLimit.limitTime = 24
             RealmManager.shared.write(loanLimit)
         }
         
