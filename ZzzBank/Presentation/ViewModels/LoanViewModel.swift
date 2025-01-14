@@ -17,6 +17,8 @@ final class LoanViewModel: ObservableObject {
         let loan = LoanRecord()
         loan.loanTime = Int(timeValue)
         realm.write(loan)
+        
+        NotificationManager.shared.scheduleNotification(id: loan.id, endDate: loan.date) // 대출 마감 당일에 알람 등록
     }
 
     func getLoanLimit() -> CGFloat {
@@ -83,6 +85,7 @@ final class LoanViewModel: ObservableObject {
             
             if shouldDelete {
                 self.realm.delete(loanRecord)
+                NotificationManager.shared.removeNotification(identifier: loanRecord.id) // 이미 갚은 대출은 알림 삭제
             }
         }
     }

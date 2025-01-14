@@ -23,6 +23,7 @@ class LoanViewController: UIViewController {
                 self?.viewModel.saveLoan()
                 self?.viewModel.updateLoanLimit()
                 self?.navigationController?.popViewController(animated: true)
+                // 대출 상환 5일뒤 알림 등록해야함
             } else {
                 
             }
