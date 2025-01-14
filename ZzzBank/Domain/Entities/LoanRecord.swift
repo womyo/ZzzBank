@@ -10,12 +10,12 @@ import RealmSwift
 
 final class LoanRecord: Object {
     @objc dynamic var id = UUID().uuidString
-    @objc dynamic var loanTime: Double = 0
+    @objc dynamic var loanTime: Int = 0
     @objc dynamic var overdueInterest: Double = 0.0
     @objc dynamic var date: Date = {
         let current = Date()
         let calendar = Calendar.current
-        return calendar.date(byAdding: .day, value: 5, to: current)!
+        return calendar.date(byAdding: .day, value: 0, to: current)!
     }()
     
     override static func primaryKey() -> String? {

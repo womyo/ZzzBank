@@ -37,9 +37,11 @@ class LoanRecordViewController: UIViewController {
         button.backgroundColor = .systemBlue
         
         button.addAction(UIAction { [weak self] _ in
-            if let text = self?.repaymentTextField.text, let repaymentValue = Double(text) {
-                self?.viewModel.payLoad(amount: repaymentValue)
-                self?.navigationController?.popViewController(animated: true)
+            HealthKitManager.shared.getSleepData() { result in
+                DispatchQueue.main.async {
+                    self?.viewModel.payLoad(amount: result - UserDefaults.standard.double(forKey: "personSleep"))
+                    self?.navigationController?.popViewController(animated: true)
+                }
             }
         }, for: .touchUpInside)
         return button
@@ -95,15 +97,6 @@ extension LoanRecordViewController: UITableViewDataSource, UITableViewDelegate {
         
         let loanRecord = viewModel.getLoanRecords()[indexPath.row]
         cell.configure(with: loanRecord)
-//        let calendar = Calendar.current
-//        
-//        viewModel.getLoanRecords().enumerated().forEach { index, loanRecord in
-//            let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: calendar.startOfDay(for: loanRecord.date))
-//            
-//            if let days = dateComponents.day, Date() > loanRecord.date {
-//                viewModel.updateLoanRecords(index: index, overdueDays: abs(days))
-//            }
-//        }
         
         return cell
     }

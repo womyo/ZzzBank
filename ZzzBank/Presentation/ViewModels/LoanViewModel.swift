@@ -15,7 +15,7 @@ final class LoanViewModel: ObservableObject {
     
     func saveLoan() {
         let loan = LoanRecord()
-        loan.loanTime = timeValue
+        loan.loanTime = Int(timeValue)
         realm.write(loan)
     }
 
@@ -29,7 +29,7 @@ final class LoanViewModel: ObservableObject {
         let loanLimit = realm.read(LoanLimit.self)[0]
         
         realm.update(loanLimit) { loanLimit in
-            loanLimit.limitTime -= self.timeValue
+            loanLimit.limitTime -= Int(self.timeValue)
         }
     }
     
@@ -58,24 +58,24 @@ final class LoanViewModel: ObservableObject {
                 // 연체 이자 상환
                 if loanRecord.overdueInterest > 0 {
                     if remainingAmount >= loanRecord.overdueInterest {
-                        remainingAmount -= loanRecord.overdueInterest
+                        remainingAmount = round((remainingAmount - loanRecord.overdueInterest) * 10) / 10
                         loanRecord.overdueInterest = 0
                     } else {
-                        loanRecord.overdueInterest -= remainingAmount
+                        loanRecord.overdueInterest = round((loanRecord.overdueInterest - remainingAmount) * 10) / 10
                         remainingAmount = 0
                     }
                 }
                 
                 // 원금(잠) 상환
                 if remainingAmount > 0 && loanRecord.loanTime > 0 {
-                    if remainingAmount >= loanRecord.loanTime {
-                        remainingAmount -= loanRecord.loanTime
+                    if remainingAmount >= Double(loanRecord.loanTime) {
+                        remainingAmount -= Double(loanRecord.loanTime)
                         loanLimit.limitTime += loanRecord.loanTime
                         loanRecord.loanTime = 0
                         shouldDelete = true
                     } else {
-                        loanRecord.loanTime -= remainingAmount
-                        loanLimit.limitTime += remainingAmount
+                        loanRecord.loanTime -= Int(round(remainingAmount))
+                        loanLimit.limitTime += Int(round(remainingAmount))
                         remainingAmount = 0
                     }
                 }

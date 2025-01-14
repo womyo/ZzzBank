@@ -10,7 +10,7 @@ import RealmSwift
 
 final class LoanLimit: Object {
     @objc dynamic var id = UUID().uuidString
-    @objc dynamic var limitTime: Double = 0
+    @objc dynamic var limitTime: Int = 24
     
     override static func primaryKey() -> String? {
         return "id"
