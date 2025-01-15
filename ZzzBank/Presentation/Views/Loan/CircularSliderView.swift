@@ -26,6 +26,7 @@ struct CircularSliderView: View {
     var body: some View {
         ZStack {
             Circle()
+                .fill(Color.gray.opacity(0.2))
                 .frame(width: config().radius*2, height: config().radius*2)
                 .scaleEffect(1.2)
             
@@ -63,6 +64,7 @@ struct CircularSliderView: View {
                 }
             }
         }
+        .background(.black)
         .task {
             viewModel.timeValue = 0.0
         }

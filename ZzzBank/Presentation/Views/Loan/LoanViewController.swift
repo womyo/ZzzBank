@@ -16,7 +16,7 @@ class LoanViewController: UIViewController {
         let button = UIButton()
         button.setTitle("대출 신청", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .systemBlue
+        button.backgroundColor = .blue
         button.layer.cornerRadius = 10
         button.addAction(UIAction { [weak self] _ in
             if let timeValue = self?.viewModel.timeValue, timeValue > 0 {

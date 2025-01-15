@@ -20,7 +20,7 @@ struct QueueNumberSystemView: View {
                     .frame(width: 100, height: 50)
                 
                 RoundedRectangle(cornerRadius: 5)
-                    .fill(.white)
+                    .fill(.black)
                     .frame(width: 90, height: 40)
                 
                 Text("\(Int.random(in: 1...999))")
@@ -28,6 +28,7 @@ struct QueueNumberSystemView: View {
                     
             }
         }
+        .background(.black)
         .padding()
     }
 }
