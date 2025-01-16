@@ -20,7 +20,7 @@ struct CircularSliderView: View {
     @State var angleValue: CGFloat = 0.0
     
     func config() ->Config {
-        return Config(minimumValue: 0.0, maximumValue: viewModel.getLoanLimit(), totalValue: 24.0, knobRadius: 15.0, radius: 150.0)
+        return Config(minimumValue: 0.0, maximumValue: CGFloat(viewModel.getLoanLimit()), totalValue: 24.0, knobRadius: 15.0, radius: 150.0)
     }
     
     var body: some View {

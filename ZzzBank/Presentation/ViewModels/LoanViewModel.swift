@@ -21,10 +21,10 @@ final class LoanViewModel: ObservableObject {
         NotificationManager.shared.scheduleNotification(id: loan.id, endDate: loan.date) // 대출 마감 당일에 알람 등록
     }
 
-    func getLoanLimit() -> CGFloat {
+    func getLoanLimit() -> Int {
         let loanLimit = realm.read(LoanLimit.self)[0]
         
-        return CGFloat(loanLimit.limitTime)
+        return loanLimit.limitTime
     }
     
     func updateLoanLimit() {
@@ -45,6 +45,12 @@ final class LoanViewModel: ObservableObject {
         realm.update(loanRecord) { loanRecord in
             loanRecord.overdueInterest += Double(loanRecord.loanTime) * Double(overdueDays) * 0.2
         }
+    }
+    
+    func getDebt() -> Double {
+        let loanRecords = realm.read(LoanRecord.self)
+        
+        return loanRecords.reduce(0.0) { $0 + $1.overdueInterest }
     }
     
     func payLoad(amount: Double) {

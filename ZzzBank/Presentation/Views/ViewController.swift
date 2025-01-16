@@ -9,9 +9,11 @@ import UIKit
 import SpriteKit
 import SwiftUI
 import SnapKit
+import Combine
 
 class ViewController: UIViewController {
     private let viewModel: LoanViewModel = LoanViewModel()
+    private var cancellables = Set<AnyCancellable>()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -21,49 +23,9 @@ class ViewController: UIViewController {
         return label
     }()
     
-    private let borrowedView: UIView = {
-        let view = UIView()
-        view.layer.borderWidth = 0.8
-        view.layer.borderColor = UIColor.lightGray.cgColor
-        view.layer.cornerRadius = 8
-        view.clipsToBounds = true
-        return view
-    }()
-    
-    private let borrowedLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Borrowed"
-        
-        return label
-    }()
-    
-    private let borrowedValue: UILabel = {
-        let label = UILabel()
-        label.text = "13 hours"
-        label.font = .systemFont(ofSize: 24, weight: .semibold)
-        
-        return label
-    }()
-    
-    private let repaidLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Repaid"
-        label.layer.borderWidth = 0.8
-        label.layer.borderColor = UIColor.lightGray.cgColor
-        label.layer.cornerRadius = 8
-        
-        return label
-    }()
-    
-    private let debtLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Debt"
-        label.layer.borderWidth = 0.8
-        label.layer.borderColor = UIColor.lightGray.cgColor
-        label.layer.cornerRadius = 8
-        
-        return label
-    }()
+    private let borrowedView: BorrowedView = BorrowedView()
+    private let debtView: BorrowedView = BorrowedView()
+    private let repaidView: BorrowedView = BorrowedView()
     
     private lazy var repayButton: UIButton = {
         let button = UIButton()
@@ -73,9 +35,6 @@ class ViewController: UIViewController {
         button.layer.cornerRadius = 25
         button.addAction(UIAction { [weak self] _ in
             guard let self = self else { return }
-            
-            let vc = LoanRecordViewController(viewModel: self.viewModel)
-            self.navigationController?.pushViewController(vc, animated: true)
         }, for: .touchUpInside)
         
         return button
@@ -101,15 +60,32 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         configureUI()
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(navigateToLoanRecordView))
+        borrowedView.addGestureRecognizer(tapGesture)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        borrowedView.setBorrowedValue("Borrowed", 24 - viewModel.getLoanLimit())
+        debtView.setBorrowedValue("Debt", viewModel.getDebt())
+        repaidView.setBorrowedValue("Repaid", "Temp")
+    }
+    
+//    func bind() {
+//        viewModel.$loanLimit
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] limit in
+//                self?.borrowedValue.text = "\(24 - limit) hours"
+//            }
+//            .store(in: &cancellables)
+//    }
     
     private func configureUI() {
         view.addSubview(titleLabel)
         view.addSubview(borrowedView)
-        borrowedView.addSubview(borrowedLabel)
-        borrowedView.addSubview(borrowedValue)
-        view.addSubview(repaidLabel)
-        view.addSubview(debtLabel)
+        view.addSubview(repaidView)
+        view.addSubview(debtView)
         view.addSubview(repayButton)
         view.addSubview(loanButton)
         
@@ -139,53 +115,48 @@ class ViewController: UIViewController {
         }
         
         borrowedView.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(16)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(32)
             $0.leading.equalToSuperview().offset(16)
-            $0.trailing.equalTo(repaidLabel.snp.leading).offset(-8)
-            $0.width.equalTo(repaidLabel)
+            $0.trailing.equalTo(repaidView.snp.leading).offset(-16)
+            $0.width.equalTo(repaidView)
             $0.height.equalTo(borrowedView.snp.width).multipliedBy(7.0/8.0)
         }
         
-        borrowedLabel.snp.makeConstraints {
-            $0.top.equalTo(borrowedView.snp.top).offset(32)
-            $0.leading.equalTo(borrowedView.snp.leading).offset(16)
-        }
-        
-        borrowedValue.snp.makeConstraints {
-            $0.top.equalTo(borrowedLabel.snp.bottom).offset(16)
-            $0.leading.equalTo(borrowedView.snp.leading).offset(16)
-        }
-        
-        repaidLabel.snp.makeConstraints {
+        repaidView.snp.makeConstraints {
             $0.top.equalTo(borrowedView.snp.top)
-            $0.leading.equalTo(borrowedView.snp.trailing).offset(8)
+            $0.leading.equalTo(borrowedView.snp.trailing).offset(16)
             $0.trailing.equalToSuperview().offset(-16)
             $0.width.equalTo(borrowedView)
-            $0.height.equalTo(repaidLabel.snp.width).multipliedBy(7.0/8.0)
+            $0.height.equalTo(repaidView.snp.width).multipliedBy(7.0/8.0)
         }
         
-        debtLabel.snp.makeConstraints {
+        debtView.snp.makeConstraints {
             $0.top.equalTo(borrowedView.snp.bottom).offset(16)
             $0.leading.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().offset(-16)
-            $0.height.equalTo(debtLabel.snp.width).multipliedBy(1.0/3.0)
+            $0.height.equalTo(debtView.snp.width).multipliedBy(1.0/3.0)
         }
         
         repayButton.snp.makeConstraints {
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-10)
             $0.leading.equalToSuperview().offset(16)
-            $0.trailing.equalTo(loanButton.snp.leading).offset(-8)
+            $0.trailing.equalTo(loanButton.snp.leading).offset(-16)
             $0.width.equalTo(loanButton)
             $0.height.equalTo(50)
         }
         
         loanButton.snp.makeConstraints {
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-10)
-            $0.leading.equalTo(repayButton.snp.trailing).offset(8)
+            $0.leading.equalTo(repayButton.snp.trailing).offset(16)
             $0.trailing.equalToSuperview().offset(-16)
             $0.width.equalTo(repayButton)
             $0.height.equalTo(50)
         }
+    }
+    
+    @objc private func navigateToLoanRecordView() {
+        let vc = LoanRecordViewController(viewModel: self.viewModel)
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }
 
