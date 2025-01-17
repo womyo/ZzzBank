@@ -51,6 +51,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let viewModel = LoanViewModel()
             let calendar = Calendar.current
             
+            HealthKitManager.shared.getSleepData() { result in
+                viewModel.payLoad(amount: result - UserDefaults.standard.double(forKey: "personSleep"))
+            }
+            
             viewModel.getLoanRecords().enumerated().forEach { index, loanRecord in
                 let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: calendar.startOfDay(for: loanRecord.date))
                 
@@ -65,7 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func scheduleBackgroundTask() {
         let request = BGAppRefreshTaskRequest(identifier: "com.example.updateLoanRecords")
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 60 * 60)
+        request.earliestBeginDate = Calendar.current.startOfDay(for: Date()).addingTimeInterval(24 * 60 * 60)
         do {
             try BGTaskScheduler.shared.submit(request)
         } catch {

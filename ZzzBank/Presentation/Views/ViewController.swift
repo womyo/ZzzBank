@@ -23,9 +23,9 @@ class ViewController: UIViewController {
         return label
     }()
     
-    private let borrowedView: BorrowedView = BorrowedView()
-    private let debtView: BorrowedView = BorrowedView()
-    private let repaidView: BorrowedView = BorrowedView()
+    private let borrowedView: SleepInfoView = SleepInfoView()
+    private let debtView: SleepInfoView = SleepInfoView()
+    private let repaidView: SleepInfoView = SleepInfoView()
     
     private lazy var repayButton: UIButton = {
         let button = UIButton()
@@ -67,9 +67,9 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        borrowedView.setBorrowedValue("Borrowed", 24 - viewModel.getLoanLimit())
-        debtView.setBorrowedValue("Debt", viewModel.getDebt())
-        repaidView.setBorrowedValue("Repaid", "Temp")
+        borrowedView.setLabels("Borrowed", 24 - viewModel.getLoanLimit())
+        debtView.setLabels("Debt", viewModel.getDebt())
+        repaidView.setLabels("Repaid", "Temp")
     }
     
 //    func bind() {

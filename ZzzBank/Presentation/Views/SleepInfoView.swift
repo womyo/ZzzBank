@@ -8,14 +8,14 @@
 import UIKit
 import SnapKit
 
-class BorrowedView: UIView {
-    private let borrowedLabel: UILabel = {
+class SleepInfoView: UIView {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         
         return label
     }()
     
-    private let borrowedValue: UILabel = {
+    private let valueLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 24, weight: .semibold)
         
@@ -37,7 +37,7 @@ class BorrowedView: UIView {
         self.layer.cornerRadius = 8
         self.clipsToBounds = true
         
-        let stackView = UIStackView(arrangedSubviews: [borrowedLabel, borrowedValue])
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, valueLabel])
         stackView.axis = .vertical
         stackView.spacing = 16
         stackView.alignment = .leading
@@ -50,8 +50,8 @@ class BorrowedView: UIView {
         }
     }
     
-    func setBorrowedValue<T> (_ text: String, _ value: T) {
-        self.borrowedLabel.text = text
-        self.borrowedValue.text = "\(value) hours"
+    func setLabels<T> (_ text: String, _ value: T) {
+        self.titleLabel.text = text
+        self.valueLabel.text = "\(value) hours"
     }
 }
