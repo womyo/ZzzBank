@@ -11,6 +11,19 @@ import SwiftUI
 import SnapKit
 import Combine
 
+extension UIView {
+    func setViewShadow(backView: UIView) {
+        layer.masksToBounds = true
+        layer.cornerRadius = 20
+        
+        backView.layer.masksToBounds = false
+        backView.layer.shadowOpacity = 0.5
+        backView.layer.shadowOffset = CGSize(width: 0, height: 0)
+        backView.layer.shadowRadius = 5
+        backView.layer.shadowColor = UIColor.white.cgColor
+    }
+}
+
 class ViewController: UIViewController {
     private let viewModel: LoanViewModel = LoanViewModel()
     private var cancellables = Set<AnyCancellable>()
@@ -23,21 +36,20 @@ class ViewController: UIViewController {
         return label
     }()
     
-    private let borrowedView: SleepInfoView = SleepInfoView()
-    private let debtView: SleepInfoView = SleepInfoView()
-    private let repaidView: SleepInfoView = SleepInfoView()
+    private let containerView = UIView()
     
-    private lazy var repayButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Repay Sleep", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .gray
-        button.layer.cornerRadius = 25
-        button.addAction(UIAction { [weak self] _ in
-            guard let self = self else { return }
-        }, for: .touchUpInside)
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 100
+        tableView.separatorStyle = .none
+        tableView.setViewShadow(backView: containerView)
         
-        return button
+        tableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.identifier)
+        
+        return tableView
     }()
     
     private lazy var loanButton: UIButton = {
@@ -62,14 +74,11 @@ class ViewController: UIViewController {
         configureUI()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(navigateToLoanRecordView))
-        borrowedView.addGestureRecognizer(tapGesture)
+        tableView.addGestureRecognizer(tapGesture)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        borrowedView.setLabels("Borrowed", 24 - viewModel.getLoanLimit())
-        debtView.setLabels("Debt", viewModel.getDebt())
-        repaidView.setLabels("Repaid", "Temp")
     }
     
 //    func bind() {
@@ -83,10 +92,8 @@ class ViewController: UIViewController {
     
     private func configureUI() {
         view.addSubview(titleLabel)
-        view.addSubview(borrowedView)
-        view.addSubview(repaidView)
-        view.addSubview(debtView)
-        view.addSubview(repayButton)
+        containerView.addSubview(tableView)
+        view.addSubview(containerView)
         view.addSubview(loanButton)
         
         let skView = SKView(frame: self.view.bounds)
@@ -114,42 +121,21 @@ class ViewController: UIViewController {
             $0.leading.equalToSuperview().offset(16)
         }
         
-        borrowedView.snp.makeConstraints {
+        containerView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(32)
             $0.leading.equalToSuperview().offset(16)
-            $0.trailing.equalTo(repaidView.snp.leading).offset(-16)
-            $0.width.equalTo(repaidView)
-            $0.height.equalTo(borrowedView.snp.width).multipliedBy(7.0/8.0)
-        }
-        
-        repaidView.snp.makeConstraints {
-            $0.top.equalTo(borrowedView.snp.top)
-            $0.leading.equalTo(borrowedView.snp.trailing).offset(16)
             $0.trailing.equalToSuperview().offset(-16)
-            $0.width.equalTo(borrowedView)
-            $0.height.equalTo(repaidView.snp.width).multipliedBy(7.0/8.0)
+            $0.bottom.equalTo(loanButton.snp.top).offset(-16)
         }
         
-        debtView.snp.makeConstraints {
-            $0.top.equalTo(borrowedView.snp.bottom).offset(16)
-            $0.leading.equalToSuperview().offset(16)
-            $0.trailing.equalToSuperview().offset(-16)
-            $0.height.equalTo(debtView.snp.width).multipliedBy(1.0/3.0)
-        }
-        
-        repayButton.snp.makeConstraints {
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-10)
-            $0.leading.equalToSuperview().offset(16)
-            $0.trailing.equalTo(loanButton.snp.leading).offset(-16)
-            $0.width.equalTo(loanButton)
-            $0.height.equalTo(50)
+        tableView.snp.makeConstraints {
+            $0.edges.equalToSuperview() // containerView 내부에 꽉 차도록 배치
         }
         
         loanButton.snp.makeConstraints {
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-10)
-            $0.leading.equalTo(repayButton.snp.trailing).offset(16)
+            $0.leading.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().offset(-16)
-            $0.width.equalTo(repayButton)
             $0.height.equalTo(50)
         }
     }
@@ -160,3 +146,29 @@ class ViewController: UIViewController {
     }
 }
 
+extension ViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        3
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.identifier, for: indexPath) as? TableViewCell else {
+            return UITableViewCell()
+        }
+        
+        let loanRecords = viewModel.getLoanRecords()
+        let repayRecords = viewModel.getRepaymentRecords()
+        
+        var combined: [DateSortable] = Array(loanRecords) + Array(repayRecords)
+        combined = combined.sorted { $0.date > $1.date }
+        let data = combined[indexPath.row]
+        
+        cell.configure(with: data, index: indexPath.row)
+        cell.selectionStyle = .none
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        80
+    }
+}
