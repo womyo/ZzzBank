@@ -50,7 +50,7 @@ class LoanRecordTableViewCell: UITableViewCell {
         
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
-        let loanDate = calendar.startOfDay(for: loanRecord.date)
+        let loanDate = calendar.startOfDay(for: loanRecord.repaymentDate)
         let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: today), to: calendar.startOfDay(for: loanDate))
         
         if let days = dateComponents.day {

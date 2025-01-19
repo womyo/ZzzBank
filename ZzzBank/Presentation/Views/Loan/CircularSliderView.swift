@@ -64,7 +64,7 @@ struct CircularSliderView: View {
                 }
             }
         }
-        .background(.black)
+        .background(Color(UIColor.customBackgroundColor))
         .task {
             viewModel.timeValue = 0.0
         }

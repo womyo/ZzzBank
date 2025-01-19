@@ -20,7 +20,7 @@ class TabBarController: UITabBarController {
     private func setupTabBarLayout() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = .systemBackground
+        appearance.backgroundColor = .customBackgroundColor
         appearance.shadowColor = .lightGray
         appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.white]
         appearance.stackedLayoutAppearance.selected.iconColor = .white

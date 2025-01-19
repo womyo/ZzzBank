@@ -42,7 +42,7 @@ class LoanViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .customBackgroundColor
         navigationItem.title = "잠은행"
         configureUI()
     }
@@ -50,6 +50,7 @@ class LoanViewController: UIViewController {
     func configureUI() {
         let queueSystemVC = UIHostingController(rootView: QueueNumberSystemView())
         let queueSystemView = queueSystemVC.view!
+        queueSystemView.backgroundColor = .customBackgroundColor
         view.addSubview(queueSystemView)
         queueSystemVC.didMove(toParent: self)
         
@@ -60,6 +61,7 @@ class LoanViewController: UIViewController {
         
         let circularSliderVC = UIHostingController(rootView: CircularSliderView(viewModel: viewModel))
         let circularSliderView = circularSliderVC.view!
+        circularSliderView.backgroundColor = .customBackgroundColor
         view.addSubview(circularSliderView)
         circularSliderVC.didMove(toParent: self)
         
@@ -74,7 +76,7 @@ class LoanViewController: UIViewController {
         }
         
         circularSliderView.snp.makeConstraints {
-            $0.top.equalTo(gaugeView.snp.bottom).offset(16)
+            $0.top.equalTo(gaugeView.snp.bottom).offset(48)
             $0.centerX.equalToSuperview()
         }
         

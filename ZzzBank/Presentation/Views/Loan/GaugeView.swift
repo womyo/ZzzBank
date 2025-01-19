@@ -28,7 +28,7 @@ struct GaugeView: View {
             Text("\(Int(maxValue))")
                 .foregroundColor(Color.red)
         }
-        .background(.black)
+        .background(Color(UIColor.customBackgroundColor))
         .gaugeStyle(.accessoryCircular)
         .tint(gradient)
         .scaleEffect(1.2)

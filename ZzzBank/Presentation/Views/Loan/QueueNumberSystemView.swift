@@ -12,7 +12,7 @@ struct QueueNumberSystemView: View {
     var body: some View {
         VStack(spacing: 0) {
             Rectangle()
-                .fill(Color.gray)
+                .fill(.gray)
                 .frame(width: 5, height: 20)
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
@@ -20,7 +20,7 @@ struct QueueNumberSystemView: View {
                     .frame(width: 100, height: 50)
                 
                 RoundedRectangle(cornerRadius: 5)
-                    .fill(.black)
+                    .fill(Color(UIColor.customBackgroundColor))
                     .frame(width: 90, height: 40)
                 
                 Text("\(Int.random(in: 1...999))")
@@ -28,8 +28,6 @@ struct QueueNumberSystemView: View {
                     
             }
         }
-        .background(.black)
-        .padding()
     }
 }
 

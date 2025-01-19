@@ -17,6 +17,7 @@ class LoanRecordViewController: UIViewController {
         tableView.delegate = self
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
+        tableView.backgroundColor = . customBackgroundColor
         tableView.register(LoanRecordTableViewCell.self, forCellReuseIdentifier: LoanRecordTableViewCell.identifier)
         
         return tableView
@@ -37,11 +38,9 @@ class LoanRecordViewController: UIViewController {
         button.backgroundColor = .systemBlue
         
         button.addAction(UIAction { [weak self] _ in
-            HealthKitManager.shared.getSleepData() { result in
-                DispatchQueue.main.async {
-                    self?.viewModel.payLoad(amount: result - UserDefaults.standard.double(forKey: "personSleep"))
-                    self?.navigationController?.popViewController(animated: true)
-                }
+            if let text = self?.repaymentTextField.text, let repaymentValue = Int(text) {
+                self?.viewModel.payLoad(amount: repaymentValue)
+                self?.navigationController?.popViewController(animated: true)
             }
         }, for: .touchUpInside)
         return button
@@ -63,7 +62,7 @@ class LoanRecordViewController: UIViewController {
     }
     
     private func configureUI() {
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .customBackgroundColor
         view.addSubview(tableView)
         view.addSubview(repaymentTextField)
         view.addSubview(repaymentButton)
@@ -97,6 +96,7 @@ extension LoanRecordViewController: UITableViewDataSource, UITableViewDelegate {
         
         let loanRecord = viewModel.getLoanRecords()[indexPath.row]
         cell.configure(with: loanRecord)
+        cell.backgroundColor = .customBackgroundColor
         
         return cell
     }
