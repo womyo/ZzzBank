@@ -11,28 +11,15 @@ import SwiftUI
 import SnapKit
 import Combine
 
-extension UIView {
-    func setViewShadow(backView: UIView) {
-        layer.masksToBounds = true
-        layer.cornerRadius = 20
-        
-        backView.layer.masksToBounds = false
-        backView.layer.shadowOpacity = 0.5
-        backView.layer.shadowOffset = CGSize(width: 0, height: 0)
-        backView.layer.shadowRadius = 5
-        backView.layer.shadowColor = UIColor.white.cgColor
-    }
-}
-
 class ViewController: UIViewController {
     private let viewModel: LoanViewModel = LoanViewModel()
     private var cancellables = Set<AnyCancellable>()
     
-    private let titleLabel: UILabel = {
+    private let infoLabel: UILabel = {
         let label = UILabel()
-        label.text = "Sleep Balance"
-        label.textColor = .white
-        label.font = .systemFont(ofSize: 24, weight: .semibold)
+        label.textColor = .systemGray
+        label.font = .systemFont(ofSize: 16, weight: .regular)
+        
         return label
     }()
     
@@ -45,11 +32,24 @@ class ViewController: UIViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
         tableView.separatorStyle = .none
+        tableView.isScrollEnabled = false
+        tableView.backgroundColor = .customBackgroundColor
         tableView.setViewShadow(backView: containerView)
         
         tableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.identifier)
         
         return tableView
+    }()
+    
+    private let tableViewHeaderView = UIView()
+    
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Sleep Balance"
+        label.textColor = .white
+        label.font = .systemFont(ofSize: 24, weight: .semibold)
+
+        return label
     }()
     
     private lazy var loanButton: UIButton = {
@@ -70,7 +70,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .customBackgroundColor
         configureUI()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(navigateToLoanRecordView))
@@ -79,6 +79,8 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        configure()
+        tableView.reloadData()
     }
     
 //    func bind() {
@@ -91,9 +93,9 @@ class ViewController: UIViewController {
 //    }
     
     private func configureUI() {
-        view.addSubview(titleLabel)
-        containerView.addSubview(tableView)
+        view.addSubview(infoLabel)
         view.addSubview(containerView)
+        containerView.addSubview(tableView)
         view.addSubview(loanButton)
         
         let skView = SKView(frame: self.view.bounds)
@@ -116,20 +118,20 @@ class ViewController: UIViewController {
             $0.width.height.equalTo(150)
         }
         
-        titleLabel.snp.makeConstraints {
+        infoLabel.snp.makeConstraints {
             $0.top.equalTo(skView.snp.bottom).offset(16)
             $0.leading.equalToSuperview().offset(16)
         }
         
         containerView.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(32)
+            $0.top.equalTo(infoLabel.snp.bottom).offset(16)
             $0.leading.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().offset(-16)
             $0.bottom.equalTo(loanButton.snp.top).offset(-16)
         }
         
         tableView.snp.makeConstraints {
-            $0.edges.equalToSuperview() // containerView 내부에 꽉 차도록 배치
+            $0.edges.equalToSuperview()
         }
         
         loanButton.snp.makeConstraints {
@@ -140,6 +142,16 @@ class ViewController: UIViewController {
         }
     }
     
+    private func configure() {
+        let loanRecords = viewModel.getLoanRecords()
+        let repayRecords = viewModel.getRepaymentRecords()
+        
+        viewModel.combinedRecords = Array(loanRecords) + Array(repayRecords)
+        viewModel.combinedRecords = viewModel.combinedRecords.sorted { $0.date > $1.date }
+        
+        infoLabel.text = "Borrowed: \(24 - viewModel.getLoanLimit()) Debt: \(viewModel.getDebt())"
+    }
+    
     @objc private func navigateToLoanRecordView() {
         let vc = LoanRecordViewController(viewModel: self.viewModel)
         self.navigationController?.pushViewController(vc, animated: true)
@@ -148,7 +160,7 @@ class ViewController: UIViewController {
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        3
+        return viewModel.combinedRecords.count > 0 ? min(viewModel.combinedRecords.count, 3) : 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -156,19 +168,24 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
             return UITableViewCell()
         }
         
-        let loanRecords = viewModel.getLoanRecords()
-        let repayRecords = viewModel.getRepaymentRecords()
-        
-        var combined: [DateSortable] = Array(loanRecords) + Array(repayRecords)
-        combined = combined.sorted { $0.date > $1.date }
-        let data = combined[indexPath.row]
-        
-        cell.configure(with: data, index: indexPath.row)
+        let combinedRecord = viewModel.combinedRecords[indexPath.row]
+        cell.configure(with: combinedRecord, index: indexPath.row, count: min(viewModel.combinedRecords.count, 3))
         cell.selectionStyle = .none
+        cell.backgroundColor = .customBackgroundColor
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         80
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        tableViewHeaderView.addSubview(titleLabel)
+        
+        titleLabel.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(16)
+        }
+        
+        return tableViewHeaderView
     }
 }

@@ -36,7 +36,7 @@ class HealthKitManager {
         }
     }
     
-    func getSleepData(completion: @escaping (Double) -> Void) {
+    func getSleepData(completion: @escaping (Int) -> Void) {
         var totalSleep = 0.0
         if let sleepType = HKObjectType.categoryType(forIdentifier: HKCategoryTypeIdentifier.sleepAnalysis) {
             let calander = Calendar.current
@@ -44,7 +44,7 @@ class HealthKitManager {
             let startDate = calander.date(byAdding: .day, value: -1, to: endDate)
             let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate)
             let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
-            let query = HKSampleQuery(sampleType: sleepType, predicate: predicate, limit: 20, sortDescriptors: [sortDescriptor]) { (query, tmpResult, error) in
+            let query = HKSampleQuery(sampleType: sleepType, predicate: predicate, limit: 1000, sortDescriptors: [sortDescriptor]) { (query, tmpResult, error) in
                 if let error = error {
                     print(error.localizedDescription)
                     return
@@ -52,19 +52,19 @@ class HealthKitManager {
                 
                 if let result = tmpResult {
                     for item in result {
-                        if let sample = item as? HKCategorySample {
+                        if let sample = item as? HKCategorySample, sample.value != 2 {
                             let timeInterval = sample.endDate.timeIntervalSince(sample.startDate)
-                            let hours = round(timeInterval / 3600 * 10) / 10
-                            
-                            totalSleep += hours
+                            totalSleep += timeInterval
                         }
                     }
                 }
-                completion(totalSleep)
+                
+                let totalSleepToHour: Int = Int(round(totalSleep / 3600))
+                completion(totalSleepToHour)
             }
             healthStore.execute(query)
         } else {
-            completion(0.0)
+            completion(0)
         }
     }
 }

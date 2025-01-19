@@ -52,13 +52,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let calendar = Calendar.current
             
             HealthKitManager.shared.getSleepData() { result in
-                viewModel.payLoad(amount: result - UserDefaults.standard.double(forKey: "personSleep"))
+                viewModel.payLoad(amount: result - UserDefaults.standard.integer(forKey: "personSleep"))
             }
             
             viewModel.getLoanRecords().enumerated().forEach { index, loanRecord in
-                let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: calendar.startOfDay(for: loanRecord.date))
+                let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: calendar.startOfDay(for: loanRecord.repaymentDate))
                 
-                if let days = dateComponents.day, Date() > loanRecord.date {
+                if let days = dateComponents.day, Date() > loanRecord.repaymentDate {
                     viewModel.updateLoanRecords(index: index, overdueDays: abs(days))
                 }
             }
