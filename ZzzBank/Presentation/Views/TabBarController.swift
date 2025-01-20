@@ -35,7 +35,7 @@ class TabBarController: UITabBarController {
         firstViewController.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
         
         let secondViewController = UIViewController()
-        secondViewController.tabBarItem = UITabBarItem(title: "Sleep", image: UIImage(systemName: "heart"), selectedImage: UIImage(systemName: "heart.fill"))
+        secondViewController.tabBarItem = UITabBarItem(title: "Setting", image: UIImage(systemName: "gearshape"), selectedImage: UIImage(systemName: "gearshape.fill"))
         
         viewControllers = [firstViewController, secondViewController]
     }

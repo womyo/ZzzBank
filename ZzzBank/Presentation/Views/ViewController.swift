@@ -45,7 +45,7 @@ class ViewController: UIViewController {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Sleep Balance"
+        label.text = "Sleep History"
         label.textColor = .white
         label.font = .systemFont(ofSize: 24, weight: .semibold)
 
@@ -124,7 +124,7 @@ class ViewController: UIViewController {
         }
         
         containerView.snp.makeConstraints {
-            $0.top.equalTo(infoLabel.snp.bottom).offset(16)
+            $0.top.equalTo(infoLabel.snp.bottom).offset(112)
             $0.leading.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().offset(-16)
             $0.bottom.equalTo(loanButton.snp.top).offset(-16)

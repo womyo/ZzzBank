@@ -11,8 +11,39 @@ import SnapKit
 class LoanRecordTableViewCell: UITableViewCell {
     static let identifier = "LoanRecordTableView"
     
-    private let loanTime = UILabel()
-    private let date = UILabel()
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [dateLabel, loanStatusLabel])
+        stackView.axis = .vertical
+        stackView.alignment = .leading
+        stackView.spacing = 8
+        
+        return stackView
+    }()
+    
+    private lazy var infoStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [flagLabel, infoLabel])
+        stackView.axis = .vertical
+        stackView.alignment = .trailing
+        stackView.spacing = 8
+        
+        return stackView
+    }()
+    
+    private let dateLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.textColor = .gray
+        return label
+    }()
+    
+    private let flagLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .medium)
+
+        return label
+    }()
+    
+    private let infoLabel = UILabel()
     private let loanStatusLabel = UILabel()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -25,47 +56,54 @@ class LoanRecordTableViewCell: UITableViewCell {
     }
     
     private func configureUI() {
-        contentView.addSubview(loanTime)
-        contentView.addSubview(date)
-        contentView.addSubview(loanStatusLabel)
+        contentView.addSubview(stackView)
+        contentView.addSubview(infoStackView)
         
-        loanTime.snp.makeConstraints {
-            $0.leading.equalTo(contentView.snp.leading).offset(16)
+        stackView.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(16)
             $0.centerY.equalToSuperview()
         }
         
-        date.snp.makeConstraints {
-            $0.leading.equalTo(loanTime.snp.trailing).offset(16)
-            $0.centerY.equalToSuperview()
-        }
-        
-        loanStatusLabel.snp.makeConstraints {
-            $0.leading.equalTo(date.snp.trailing).offset(16)
+        infoStackView.snp.makeConstraints {
+            $0.trailing.equalToSuperview().offset(-16)
             $0.centerY.equalToSuperview()
         }
     }
     
-    func configure(with loanRecord: LoanRecord) {
-        loanTime.text = "대출 시간: \(loanRecord.loanTime)"
+    func configure(with record: DateSortable) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:MM:SS"
         
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        let loanDate = calendar.startOfDay(for: loanRecord.repaymentDate)
-        let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: today), to: calendar.startOfDay(for: loanDate))
-        
-        if let days = dateComponents.day {
-            if loanDate > today {
-                loanStatusLabel.text = "상환 마감까지 \(days)일"
-            } else if loanDate == today {
-                loanStatusLabel.text = "상환 마감 당일"
-            } else {
-                loanStatusLabel.text = "상환 마감 \(abs(days))일 초과!"
-            }
+        if let loan = record as? LoanRecord {
+            flagLabel.text = "Borrowed"
+            flagLabel.textColor = .systemBlue
+            infoLabel.text = "\(loan.loanTime) hours"
+            dateLabel.text = "\(dateFormatter.string(from: loan.date))"
             
-            if loanDate < today {
-                date.text = "연체 이자: \(loanRecord.overdueInterest)"
+            let calendar = Calendar.current
+            let today = calendar.startOfDay(for: Date())
+            let loanDate = calendar.startOfDay(for: loan.repaymentDate)
+            let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: today), to: calendar.startOfDay(for: loanDate))
+            
+            if loan.loanTimeCP == 0 {
+                loanStatusLabel.text = "Complete"
+            } else {
+                if let days = dateComponents.day {
+                    if loanDate > today {
+                        loanStatusLabel.text = "상환 마감까지 \(days)일"
+                    } else if loanDate == today {
+                        loanStatusLabel.text = "상환 마감 당일"
+                    } else {
+                        loanStatusLabel.text = "상환 마감 \(abs(days))일 초과. 연체 이자: \(loan.overdueInterest)"
+                    }
+                }
             }
+
+        } else if let repayment = record as? RepayRecord {
+            flagLabel.text = "Repaid"
+            flagLabel.textColor = .systemRed
+            infoLabel.text = "\(repayment.repayTime) hours"
+            dateLabel.text = "\(dateFormatter.string(from: repayment.date))"
         }
     }
-
 }

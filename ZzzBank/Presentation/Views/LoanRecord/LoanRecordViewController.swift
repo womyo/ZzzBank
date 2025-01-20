@@ -11,6 +11,14 @@ import SnapKit
 class LoanRecordViewController: UIViewController {
     private let viewModel: LoanViewModel
     
+    private let dateSectionLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.textColor = .gray
+        
+        return label
+    }()
+    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.dataSource = self
@@ -59,10 +67,14 @@ class LoanRecordViewController: UIViewController {
         super.viewDidLoad()
         
         configureUI()
+        
+        viewModel.changeCombinedRepaymentsToDict()
+        dateSectionLabel.text = "2024.12.20 ~ 2025.12.20 (12건)"
     }
     
     private func configureUI() {
         view.backgroundColor = .customBackgroundColor
+        view.addSubview(dateSectionLabel)
         view.addSubview(tableView)
         view.addSubview(repaymentTextField)
         view.addSubview(repaymentButton)
@@ -77,16 +89,29 @@ class LoanRecordViewController: UIViewController {
             $0.leading.equalTo(repaymentTextField.snp.trailing).offset(16)
         }
         
-        tableView.snp.makeConstraints {
+        dateSectionLabel.snp.makeConstraints {
             $0.top.equalTo(repaymentButton.snp.bottom).offset(16)
+            $0.leading.equalToSuperview().offset(16)
+        }
+        
+        tableView.snp.makeConstraints {
+            $0.top.equalTo(dateSectionLabel.snp.bottom).offset(16)
             $0.bottom.leading.trailing.equalToSuperview()
         }
     }
 }
 
 extension LoanRecordViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.getLoanRecords().count
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        viewModel.combinedRecordsForDict.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {        
+        if let records = viewModel.combinedRecordsForDict[viewModel.keys[section]] {
+            return records.count
+        }
+        return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -94,10 +119,25 @@ extension LoanRecordViewController: UITableViewDataSource, UITableViewDelegate {
             return UITableViewCell()
         }
         
-        let loanRecord = viewModel.getLoanRecords()[indexPath.row]
-        cell.configure(with: loanRecord)
+        if let records = viewModel.combinedRecordsForDict[viewModel.keys[indexPath.section]] {
+            let record = records[indexPath.row]
+            cell.configure(with: record)
+        }
+        
+        cell.selectionStyle = .none
         cell.backgroundColor = .customBackgroundColor
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        return dateFormatter.string(from: viewModel.keys[section])
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        80
     }
 }

@@ -13,6 +13,8 @@ final class LoanViewModel: ObservableObject {
     @Published var timeValue: CGFloat = 0.0
     @Published var loanRecords = []
     @Published var combinedRecords: [DateSortable] = []
+    @Published var combinedRecordsForDict: [Date: [DateSortable]] = [:]
+    var keys: [Date] = []
     
     func saveLoan() {
         let loan = LoanRecord()
@@ -67,6 +69,19 @@ final class LoanViewModel: ObservableObject {
         return realm.read(RepayRecord.self)
     }
     
+    func changeCombinedRepaymentsToDict() {
+        combinedRecordsForDict = [:]
+        
+        for record in combinedRecords {
+            let recordDate = Calendar.current.startOfDay(for: record.date)
+            if !combinedRecordsForDict.keys.contains(recordDate) {
+                combinedRecordsForDict[recordDate] = []
+            }
+            combinedRecordsForDict[recordDate]?.append(record)
+        }
+        
+        keys = Array(combinedRecordsForDict.keys).sorted(by: >)
+    }
     func payLoad(amount: Int) {
         let loanLimit = realm.read(LoanLimit.self)[0]
         let loanRecords = realm.read(LoanRecord.self)
