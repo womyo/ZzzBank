@@ -23,6 +23,15 @@ class ViewController: UIViewController {
         return label
     }()
     
+    private let mentLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .systemGray
+        label.font = .systemFont(ofSize: 16, weight: .regular)
+        label.numberOfLines = 0
+        
+        return label
+    }()
+    
     private let containerView = UIView()
     
     private lazy var tableView: UITableView = {
@@ -57,7 +66,7 @@ class ViewController: UIViewController {
         button.setTitle("Borrow Sleep", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .blue
-        button.layer.cornerRadius = 25
+        button.layer.cornerRadius = 12
         button.addAction(UIAction { [weak self] _ in
             guard let self = self else { return }
             
@@ -94,6 +103,7 @@ class ViewController: UIViewController {
     
     private func configureUI() {
         view.addSubview(infoLabel)
+        view.addSubview(mentLabel)
         view.addSubview(containerView)
         containerView.addSubview(tableView)
         view.addSubview(loanButton)
@@ -120,11 +130,18 @@ class ViewController: UIViewController {
         
         infoLabel.snp.makeConstraints {
             $0.top.equalTo(skView.snp.bottom).offset(16)
-            $0.leading.equalToSuperview().offset(16)
+            $0.centerX.equalToSuperview()
+//            $0.leading.equalToSuperview().offset(16)
+        }
+        
+        mentLabel.snp.makeConstraints {
+            $0.top.equalTo(infoLabel.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().offset(16)
+            $0.centerX.equalToSuperview()
         }
         
         containerView.snp.makeConstraints {
-            $0.top.equalTo(infoLabel.snp.bottom).offset(112)
+            $0.top.equalTo(mentLabel.snp.bottom).offset(48)
             $0.leading.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().offset(-16)
             $0.bottom.equalTo(loanButton.snp.top).offset(-16)
@@ -135,7 +152,7 @@ class ViewController: UIViewController {
         }
         
         loanButton.snp.makeConstraints {
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-10)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-16)
             $0.leading.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().offset(-16)
             $0.height.equalTo(50)
@@ -150,6 +167,7 @@ class ViewController: UIViewController {
         viewModel.combinedRecords = viewModel.combinedRecords.sorted { $0.date > $1.date }
         
         infoLabel.text = "Borrowed: \(24 - viewModel.getLoanLimit()) Debt: \(viewModel.getDebt())"
+        mentLabel.text = "Sleep debt is accumulating. Consider going to bed earlier."
     }
     
     @objc private func navigateToLoanRecordView() {
