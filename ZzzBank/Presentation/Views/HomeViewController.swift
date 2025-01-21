@@ -11,7 +11,7 @@ import SwiftUI
 import SnapKit
 import Combine
 
-class ViewController: UIViewController {
+class HomeViewController: UIViewController {
     private let viewModel: LoanViewModel = LoanViewModel()
     private var cancellables = Set<AnyCancellable>()
     
@@ -56,7 +56,7 @@ class ViewController: UIViewController {
         tableView.backgroundColor = .customBackgroundColor
         tableView.setViewShadow(backView: containerView)
         
-        tableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.identifier)
+        tableView.register(HistoryTableViewCell.self, forCellReuseIdentifier: HistoryTableViewCell.identifier)
         
         return tableView
     }()
@@ -137,7 +137,8 @@ class ViewController: UIViewController {
         
         mentLabel.snp.makeConstraints {
             $0.top.equalTo(infoLabel.snp.bottom).offset(8)
-            $0.leading.trailing.equalToSuperview().offset(16)
+            $0.leading.equalToSuperview().offset(16)
+            $0.trailing.equalToSuperview().offset(-16)
         }
         
         containerView.snp.makeConstraints {
@@ -152,7 +153,7 @@ class ViewController: UIViewController {
         }
         
         loanButton.snp.makeConstraints {
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-16)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-10)
             $0.leading.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().offset(-16)
             $0.height.equalTo(50)
@@ -193,13 +194,13 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController: UITableViewDataSource, UITableViewDelegate {
+extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.combinedRecords.count > 0 ? min(viewModel.combinedRecords.count, 3) : 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.identifier, for: indexPath) as? TableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: HistoryTableViewCell.identifier, for: indexPath) as? HistoryTableViewCell else {
             return UITableViewCell()
         }
         

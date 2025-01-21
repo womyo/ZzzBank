@@ -31,7 +31,7 @@ class TabBarController: UITabBarController {
     }
     
     private func setupTabBarItems() {
-        let firstViewController = ViewController()
+        let firstViewController = HomeViewController()
         firstViewController.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
         
         let secondViewController = UIViewController()

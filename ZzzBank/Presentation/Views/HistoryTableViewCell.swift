@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TableViewCell: UITableViewCell {
+class HistoryTableViewCell: UITableViewCell {
     static let identifier = "TableView"
     
     private let dotView: UIView = {
