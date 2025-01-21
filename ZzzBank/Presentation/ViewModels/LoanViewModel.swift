@@ -48,7 +48,7 @@ final class LoanViewModel: ObservableObject {
         
         realm.update(loanRecord) { loanRecord in
             let interest = Double(loanRecord.loanTimeCP) * Double(overdueDays) * 0.2
-            let roundedInterest = Int(round(interest * 10))
+            let roundedInterest = Int(round(interest))
             loanRecord.overdueInterest += roundedInterest
         }
     }
