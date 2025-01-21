@@ -47,7 +47,7 @@ class LoanRecordViewController: UIViewController {
         
         button.addAction(UIAction { [weak self] _ in
             if let text = self?.repaymentTextField.text, let repaymentValue = Int(text) {
-                self?.viewModel.payLoad(amount: repaymentValue)
+                self?.viewModel.payLoad(amount: repaymentValue - UserDefaults.standard.integer(forKey: "personSleep"))
                 self?.navigationController?.popViewController(animated: true)
             }
         }, for: .touchUpInside)
@@ -65,11 +65,20 @@ class LoanRecordViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        configureUI()
-        
         viewModel.changeCombinedRepaymentsToDict()
-        dateSectionLabel.text = "2024.12.20 ~ 2025.12.20 (12건)"
+        
+        configure()
+        configureUI()
+    }
+    
+    private func configure() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.MM.dd"
+        
+        let monthAgo = Calendar.current.date(byAdding: .month, value: -1, to: Date())!
+        let today = Date()
+        
+        dateSectionLabel.text = "\(dateFormatter.string(from: monthAgo)) ~ \(dateFormatter.string(from: today)) (\(viewModel.combinedRecordsCount)건)"
     }
     
     private func configureUI() {

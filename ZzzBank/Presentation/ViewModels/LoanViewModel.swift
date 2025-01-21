@@ -14,6 +14,7 @@ final class LoanViewModel: ObservableObject {
     @Published var loanRecords = []
     @Published var combinedRecords: [DateSortable] = []
     @Published var combinedRecordsForDict: [Date: [DateSortable]] = [:]
+    var combinedRecordsCount: Int = 0
     var keys: [Date] = []
     
     func saveLoan() {
@@ -72,12 +73,22 @@ final class LoanViewModel: ObservableObject {
     func changeCombinedRepaymentsToDict() {
         combinedRecordsForDict = [:]
         
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.MM.dd"
+        
+        let monthAgo = Calendar.current.date(byAdding: .month, value: -1, to: Date())!
+        let today = Date()
+        
         for record in combinedRecords {
             let recordDate = Calendar.current.startOfDay(for: record.date)
-            if !combinedRecordsForDict.keys.contains(recordDate) {
-                combinedRecordsForDict[recordDate] = []
+            
+            if monthAgo < recordDate && recordDate < today {
+                if !combinedRecordsForDict.keys.contains(recordDate) {
+                    combinedRecordsForDict[recordDate] = []
+                }
+                combinedRecordsForDict[recordDate]?.append(record)
+                combinedRecordsCount += 1
             }
-            combinedRecordsForDict[recordDate]?.append(record)
         }
         
         keys = Array(combinedRecordsForDict.keys).sorted(by: >)
