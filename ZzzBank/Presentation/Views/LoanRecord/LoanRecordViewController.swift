@@ -13,7 +13,7 @@ class LoanRecordViewController: UIViewController {
     
     private let dateSectionLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textColor = .gray
         
         return label
@@ -54,6 +54,22 @@ class LoanRecordViewController: UIViewController {
         return button
     }()
     
+    private lazy var settingButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("1개월·전체·최신순v", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.addAction(UIAction { [weak self] _ in
+            let sheetViewController = RecordSettingViewController()
+            if let sheet = sheetViewController.sheetPresentationController {
+                sheet.detents = [.medium()]
+            }
+            self?.present(sheetViewController, animated: true, completion: nil)
+        }, for: .touchUpInside)
+        
+        return button
+    }()
+    
     init(viewModel: LoanViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -85,21 +101,28 @@ class LoanRecordViewController: UIViewController {
         view.backgroundColor = .customBackgroundColor
         view.addSubview(dateSectionLabel)
         view.addSubview(tableView)
-        view.addSubview(repaymentTextField)
-        view.addSubview(repaymentButton)
+//        view.addSubview(repaymentTextField)
+//        view.addSubview(repaymentButton)
+        view.addSubview(settingButton)
         
-        repaymentTextField.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            $0.leading.equalToSuperview().offset(16)
-        }
+//        repaymentTextField.snp.makeConstraints {
+//            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+//            $0.leading.equalToSuperview().offset(16)
+//        }
+//        
+//        repaymentButton.snp.makeConstraints {
+//            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+//            $0.leading.equalTo(repaymentTextField.snp.trailing).offset(16)
+//        }
         
-        repaymentButton.snp.makeConstraints {
+        settingButton.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            $0.leading.equalTo(repaymentTextField.snp.trailing).offset(16)
+            $0.trailing.equalToSuperview().offset(-16)
         }
         
         dateSectionLabel.snp.makeConstraints {
-            $0.top.equalTo(repaymentButton.snp.bottom).offset(16)
+//            $0.top.equalTo(settingButton.snp.bottom).offset(16)
+            $0.centerY.equalTo(settingButton.snp.centerY)
             $0.leading.equalToSuperview().offset(16)
         }
         

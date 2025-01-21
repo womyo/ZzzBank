@@ -72,7 +72,7 @@ class LoanRecordTableViewCell: UITableViewCell {
     
     func configure(with record: DateSortable) {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "HH:MM:SS"
+        dateFormatter.dateFormat = "HH:mm:ss"
         
         if let loan = record as? LoanRecord {
             flagLabel.text = "Borrowed"
