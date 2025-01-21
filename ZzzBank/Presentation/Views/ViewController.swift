@@ -15,6 +15,17 @@ class ViewController: UIViewController {
     private let viewModel: LoanViewModel = LoanViewModel()
     private var cancellables = Set<AnyCancellable>()
     
+//    private lazy var skView: SKView = {
+//        let skView = SKView(frame: self.view.bounds)
+//        skView.layer.zPosition = -1
+//        skView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+//        skView.ignoresSiblingOrder = true
+//        skView.layer.cornerRadius = 75
+//        skView.clipsToBounds = true
+//        
+//        return skView
+//    }()
+    
     private let infoLabel: UILabel = {
         let label = UILabel()
         label.textColor = .systemGray
@@ -80,7 +91,6 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .customBackgroundColor
-        configureUI()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(navigateToLoanRecordView))
         tableView.addGestureRecognizer(tapGesture)
@@ -89,17 +99,9 @@ class ViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         configure()
+        configureUI()
         tableView.reloadData()
     }
-    
-//    func bind() {
-//        viewModel.$loanLimit
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] limit in
-//                self?.borrowedValue.text = "\(24 - limit) hours"
-//            }
-//            .store(in: &cancellables)
-//    }
     
     private func configureUI() {
         view.addSubview(infoLabel)
@@ -111,16 +113,15 @@ class ViewController: UIViewController {
         let skView = SKView(frame: self.view.bounds)
         skView.layer.zPosition = -1
         skView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.addSubview(skView)
-        
-        let scene = GameScene(size: CGSize(width: 300, height: 300))
-        
-        scene.scaleMode = .resizeFill
-        scene.backgroundColor = .gray
         skView.ignoresSiblingOrder = true
-        skView.presentScene(scene)
         skView.layer.cornerRadius = 75
         skView.clipsToBounds = true
+        let scene = GameScene(viewModel: viewModel, size: CGSize(width: 300, height: 300))
+        scene.scaleMode = .resizeFill
+        scene.backgroundColor = .gray
+        
+        skView.presentScene(scene)
+        view.addSubview(skView)
         
         skView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
@@ -137,7 +138,6 @@ class ViewController: UIViewController {
         mentLabel.snp.makeConstraints {
             $0.top.equalTo(infoLabel.snp.bottom).offset(8)
             $0.leading.trailing.equalToSuperview().offset(16)
-            $0.centerX.equalToSuperview()
         }
         
         containerView.snp.makeConstraints {
@@ -166,8 +166,25 @@ class ViewController: UIViewController {
         viewModel.combinedRecords = Array(loanRecords) + Array(repayRecords)
         viewModel.combinedRecords = viewModel.combinedRecords.sorted { $0.date > $1.date }
         
-        infoLabel.text = "Borrowed: \(24 - viewModel.getLoanLimit()) Debt: \(viewModel.getDebt())"
-        mentLabel.text = "Sleep debt is accumulating. Consider going to bed earlier."
+        let borrowed = 24 - viewModel.getLoanLimit()
+        let debt = viewModel.getDebt()
+        
+        infoLabel.text = "Borrowed: \(borrowed) Debt: \(debt)"
+        
+        switch debt {
+        case 0..<5:
+            mentLabel.text = "You’re doing fine! A little rest will keep you on track."
+            viewModel.condition = .healthy
+        case 5..<10:
+            mentLabel.text = "Your body’s asking for a break. How about a short nap?"
+            viewModel.condition = .tired
+        case 10..<20:
+            mentLabel.text = "Feeling tired? Your energy needs a boost with some good sleep."
+            viewModel.condition = .exhausted
+        default:
+            mentLabel.text = "Your sleep debt is too high! Let’s prioritize rest right away."
+            viewModel.condition = .unwell
+        }
     }
     
     @objc private func navigateToLoanRecordView() {

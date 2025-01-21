@@ -8,22 +8,24 @@
 import Foundation
 import SpriteKit
 
-enum Condition {
-    case healthy
-    case tired
-    case exhausted
-    case unwell
-}
-
 class GameScene: SKScene {
-    private var condition: Condition = .healthy
+    private var viewModel: LoanViewModel
+    
+    init(viewModel: LoanViewModel, size: CGSize) {
+        self.viewModel = viewModel
+        super.init(size: size)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func didMove(to view: SKView) {        
         var textureAtlas: SKTextureAtlas?
         var textureArray: [SKTexture] = []
         var timePerFrame: TimeInterval = 0.2
         
-        switch condition {
+        switch viewModel.condition {
         case .healthy:
             textureAtlas = SKTextureAtlas(named: "healthy")
             break

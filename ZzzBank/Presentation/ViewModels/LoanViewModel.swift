@@ -8,6 +8,13 @@
 import Foundation
 import RealmSwift
 
+enum Condition {
+    case healthy
+    case tired
+    case exhausted
+    case unwell
+}
+
 final class LoanViewModel: ObservableObject {
     private let realm = RealmManager.shared
     @Published var timeValue: CGFloat = 0.0
@@ -16,6 +23,7 @@ final class LoanViewModel: ObservableObject {
     @Published var combinedRecordsForDict: [Date: [DateSortable]] = [:]
     var combinedRecordsCount: Int = 0
     var keys: [Date] = []
+    @Published var condition: Condition = .healthy
     
     func saveLoan() {
         let loan = LoanRecord()
