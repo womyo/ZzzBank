@@ -15,17 +15,6 @@ class HomeViewController: UIViewController {
     private let viewModel: LoanViewModel = LoanViewModel()
     private var cancellables = Set<AnyCancellable>()
     
-//    private lazy var skView: SKView = {
-//        let skView = SKView(frame: self.view.bounds)
-//        skView.layer.zPosition = -1
-//        skView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-//        skView.ignoresSiblingOrder = true
-//        skView.layer.cornerRadius = 75
-//        skView.clipsToBounds = true
-//        
-//        return skView
-//    }()
-    
     private let infoLabel: UILabel = {
         let label = UILabel()
         label.textColor = .systemGray

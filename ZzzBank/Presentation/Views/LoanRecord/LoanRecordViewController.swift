@@ -13,7 +13,7 @@ class LoanRecordViewController: UIViewController {
     
     private let dateSectionLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 12, weight: .medium)
+        label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = .gray
         
         return label
@@ -55,10 +55,13 @@ class LoanRecordViewController: UIViewController {
     }()
     
     private lazy var settingButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("1개월·전체·최신순v", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 16)
+        var config = UIButton.Configuration.plain()
+        config.title = "1개월·전체·최신순"
+        config.image = UIImage(systemName: "chevron.down")
+        config.imagePlacement = .trailing
+        config.baseForegroundColor = .white
+        
+        let button = UIButton(configuration: config, primaryAction: nil)
         button.addAction(UIAction { [weak self] _ in
             let sheetViewController = RecordSettingViewController()
             if let sheet = sheetViewController.sheetPresentationController {
@@ -81,6 +84,7 @@ class LoanRecordViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.title = "Records"
         viewModel.changeCombinedRepaymentsToDict()
         
         configure()
@@ -117,7 +121,7 @@ class LoanRecordViewController: UIViewController {
         
         settingButton.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            $0.trailing.equalToSuperview().offset(-16)
+            $0.trailing.equalToSuperview()
         }
         
         dateSectionLabel.snp.makeConstraints {
