@@ -105,22 +105,22 @@ class LoanRecordViewController: UIViewController {
         view.backgroundColor = .customBackgroundColor
         view.addSubview(dateSectionLabel)
         view.addSubview(tableView)
-//        view.addSubview(repaymentTextField)
-//        view.addSubview(repaymentButton)
+        view.addSubview(repaymentTextField)
+        view.addSubview(repaymentButton)
         view.addSubview(settingButton)
         
-//        repaymentTextField.snp.makeConstraints {
-//            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-//            $0.leading.equalToSuperview().offset(16)
-//        }
-//        
-//        repaymentButton.snp.makeConstraints {
-//            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-//            $0.leading.equalTo(repaymentTextField.snp.trailing).offset(16)
-//        }
+        repaymentTextField.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.leading.equalToSuperview().offset(16)
+        }
+        
+        repaymentButton.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.leading.equalTo(repaymentTextField.snp.trailing).offset(16)
+        }
         
         settingButton.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.top.equalTo(repaymentTextField.snp.bottom).offset(16)
             $0.trailing.equalToSuperview()
         }
         
