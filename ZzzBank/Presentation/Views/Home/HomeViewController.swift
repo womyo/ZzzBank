@@ -107,7 +107,7 @@ class HomeViewController: UIViewController {
         skView.clipsToBounds = true
         let scene = GameScene(viewModel: viewModel, size: CGSize(width: 300, height: 300))
         scene.scaleMode = .resizeFill
-        scene.backgroundColor = .gray
+        scene.backgroundColor = .customBackgroundColor
         
         skView.presentScene(scene)
         view.addSubview(skView)

@@ -37,11 +37,13 @@ class GameScene: SKScene {
             timePerFrame = 0.1
             break
         case .unwell:
+            textureAtlas = SKTextureAtlas(named: "unwell")
             break
         }
         
         guard let textureAtlas else { return }
         
+        print(textureAtlas.textureNames)
         for i in 0..<textureAtlas.textureNames.count {
             let name = "\(textureAtlas.textureNames[i])"
             textureArray.append(SKTexture(imageNamed: name))
