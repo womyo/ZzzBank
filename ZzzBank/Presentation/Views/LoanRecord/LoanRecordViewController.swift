@@ -47,8 +47,12 @@ class LoanRecordViewController: UIViewController {
         
         button.addAction(UIAction { [weak self] _ in
             if let text = self?.repaymentTextField.text, let repaymentValue = Int(text) {
-                self?.viewModel.payLoad(amount: repaymentValue - UserDefaults.standard.integer(forKey: "personSleep"))
-                self?.navigationController?.popViewController(animated: true)
+                let amount = repaymentValue - UserDefaults.standard.integer(forKey: "personSleep")
+                
+                if amount > 0 {
+                    self?.viewModel.payLoad(amount: amount)
+                    self?.navigationController?.popViewController(animated: true)
+                }
             }
         }, for: .touchUpInside)
         return button

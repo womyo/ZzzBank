@@ -73,6 +73,7 @@ final class LoanViewModel: ObservableObject {
     
     func changeCombinedRepaymentsToDict() {
         combinedRecordsForDict = [:]
+        combinedRecordsCount = 0
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"
