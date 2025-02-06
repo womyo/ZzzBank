@@ -43,7 +43,6 @@ class GameScene: SKScene {
         
         guard let textureAtlas else { return }
         
-        print(textureAtlas.textureNames)
         for i in 0..<textureAtlas.textureNames.count {
             let name = "\(textureAtlas.textureNames[i])"
             textureArray.append(SKTexture(imageNamed: name))
@@ -53,7 +52,7 @@ class GameScene: SKScene {
         let slime = SKSpriteNode(imageNamed: firstImage)
         
         slime.size = CGSize(width: 100, height: 100)
-        slime.position = CGPoint(x: 75, y: 75)
+        slime.position = CGPoint(x: 50, y: 50)
         slime.name = "slime"
         
         let slimeAnimation = SKAction.animate(with: textureArray, timePerFrame: timePerFrame)

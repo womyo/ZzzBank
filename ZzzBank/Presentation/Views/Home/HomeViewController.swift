@@ -103,9 +103,8 @@ class HomeViewController: UIViewController {
         skView.layer.zPosition = -1
         skView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         skView.ignoresSiblingOrder = true
-        skView.layer.cornerRadius = 75
         skView.clipsToBounds = true
-        let scene = GameScene(viewModel: viewModel, size: CGSize(width: 300, height: 300))
+        let scene = GameScene(viewModel: viewModel, size: CGSize(width: 200, height: 200))
         scene.scaleMode = .resizeFill
         scene.backgroundColor = .customBackgroundColor
         
@@ -115,11 +114,11 @@ class HomeViewController: UIViewController {
         skView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             $0.centerX.equalToSuperview()
-            $0.width.height.equalTo(150)
+            $0.width.height.equalTo(100)
         }
         
         infoLabel.snp.makeConstraints {
-            $0.top.equalTo(skView.snp.bottom).offset(16)
+            $0.top.equalTo(skView.snp.bottom).offset(32)
             $0.centerX.equalToSuperview()
 //            $0.leading.equalToSuperview().offset(16)
         }
@@ -131,10 +130,10 @@ class HomeViewController: UIViewController {
         }
         
         containerView.snp.makeConstraints {
-            $0.top.equalTo(mentLabel.snp.bottom).offset(48)
+            $0.height.equalTo(330)
             $0.leading.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().offset(-16)
-            $0.bottom.equalTo(loanButton.snp.top).offset(-16)
+            $0.bottom.equalTo(loanButton.snp.top).offset(-24)
         }
         
         tableView.snp.makeConstraints {
@@ -142,7 +141,7 @@ class HomeViewController: UIViewController {
         }
         
         loanButton.snp.makeConstraints {
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-10)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-16)
             $0.leading.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().offset(-16)
             $0.height.equalTo(50)

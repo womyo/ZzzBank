@@ -21,7 +21,7 @@ class HistoryTableViewCell: UITableViewCell {
     
     private let lineView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 255, green: 255, blue: 255, alpha: 0.001)
+        view.backgroundColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 0.3)
         
         return view
     }()
