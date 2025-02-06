@@ -13,7 +13,6 @@ class CustomCollectionViewCell: UICollectionViewCell {
     
     let label: UILabel = {
         let label = UILabel()
-        label.text = "HI"
         return label
     }()
     
