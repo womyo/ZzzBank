@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 
 class RecordSettingViewController: UIViewController {
-    var selectedPath: IndexPath?
+    var selectedPath: IndexPath = IndexPath(row: 1, section: 0)
     
     private let settingLabel: UILabel = {
         let label = UILabel()
