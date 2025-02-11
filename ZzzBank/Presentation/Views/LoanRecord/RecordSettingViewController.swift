@@ -9,9 +9,16 @@ import UIKit
 import SnapKit
 
 class RecordSettingViewController: UIViewController {
-    var selectedPath1: IndexPath = IndexPath(row: 1, section: 0)
-    var selectedPath2: IndexPath = IndexPath(row: 0, section: 0)
-    var selectedPath3: IndexPath = IndexPath(row: 0, section: 0)
+    private let viewModel: LoanViewModel
+    
+    init(viewModel: LoanViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private let settingLabel: UILabel = {
         let label = UILabel()
@@ -35,6 +42,21 @@ class RecordSettingViewController: UIViewController {
         let label = UILabel()
         label.text = "정렬"
         return label
+    }()
+    
+    private lazy var checkButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Check", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .blue
+        button.layer.cornerRadius = 12
+        button.addAction(UIAction { [weak self] _ in
+            guard let self = self else { return }
+            self.viewModel.changeCombinedRepaymentsToDict(type: self.viewModel.recordType, sort: self.viewModel.recordSort)
+            self.dismiss(animated: true, completion: nil)
+        }, for: .touchUpInside)
+        
+        return button
     }()
     
     private lazy var collectionView1: UICollectionView = {
@@ -88,6 +110,7 @@ class RecordSettingViewController: UIViewController {
         view.addSubview(collectionView2)
         view.addSubview(sortLabel)
         view.addSubview(collectionView3)
+        view.addSubview(checkButton)
         
         settingLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(16)
@@ -102,7 +125,7 @@ class RecordSettingViewController: UIViewController {
         collectionView1.snp.makeConstraints {
             $0.top.equalTo(termLabel.snp.bottom).offset(16)
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(50)
+            $0.height.equalTo(45)
         }
         
         typeLabel.snp.makeConstraints {
@@ -113,7 +136,7 @@ class RecordSettingViewController: UIViewController {
         collectionView2.snp.makeConstraints {
             $0.top.equalTo(typeLabel.snp.bottom).offset(16)
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(50)
+            $0.height.equalTo(45)
         }
         
         sortLabel.snp.makeConstraints {
@@ -123,7 +146,15 @@ class RecordSettingViewController: UIViewController {
         
         collectionView3.snp.makeConstraints {
             $0.top.equalTo(sortLabel.snp.bottom).offset(16)
-            $0.leading.trailing.bottom.equalToSuperview()
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(45)
+        }
+        
+        checkButton.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(16)
+            $0.trailing.equalToSuperview().offset(-16)
+            $0.bottom.equalToSuperview().offset(-32)
+            $0.height.equalTo(50)
         }
     }
 }
@@ -147,13 +178,13 @@ extension RecordSettingViewController: UICollectionViewDelegate, UICollectionVie
         switch collectionView.tag {
         case 1:
             alist = ["1주일", "1개월", "3개월"]
-            cell.layer.borderColor = (indexPath == selectedPath1) ? UIColor.systemBlue.cgColor : UIColor.systemGray.cgColor
+            cell.layer.borderColor = (indexPath == viewModel.selectedPath1) ? UIColor.systemBlue.cgColor : UIColor.systemGray.cgColor
         case 2:
             alist = ["전체", "Borrowed", "Repaid"]
-            cell.layer.borderColor = (indexPath == selectedPath2) ? UIColor.systemBlue.cgColor : UIColor.systemGray.cgColor
+            cell.layer.borderColor = (indexPath == viewModel.selectedPath2) ? UIColor.systemBlue.cgColor : UIColor.systemGray.cgColor
         case 3:
             alist = ["최신순", "과거순"]
-            cell.layer.borderColor = (indexPath == selectedPath3) ? UIColor.systemBlue.cgColor : UIColor.systemGray.cgColor
+            cell.layer.borderColor = (indexPath == viewModel.selectedPath3) ? UIColor.systemBlue.cgColor : UIColor.systemGray.cgColor
         default:
             break
         }
@@ -180,7 +211,7 @@ extension RecordSettingViewController: UICollectionViewDelegate, UICollectionVie
             }
         }()
 
-        return CGSize(width: itemWidth, height: 50)
+        return CGSize(width: itemWidth, height: 45)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -190,11 +221,31 @@ extension RecordSettingViewController: UICollectionViewDelegate, UICollectionVie
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch collectionView.tag {
         case 1:
-            selectedPath1 = indexPath
+            viewModel.selectedPath1 = indexPath
         case 2:
-            selectedPath2 = indexPath
+            viewModel.selectedPath2 = indexPath
+            
+            switch viewModel.selectedPath2.row {
+            case 0:
+                viewModel.recordType = .all
+            case 1:
+                viewModel.recordType = .borrowed
+            case 2:
+                viewModel.recordType = .repaid
+            default:
+                break
+            }
         case 3:
-            selectedPath3 = indexPath
+            viewModel.selectedPath3 = indexPath
+            
+            switch viewModel.selectedPath3.row {
+            case 0:
+                viewModel.recordSort = .ascend
+            case 1:
+                viewModel.recordSort = .descend
+            default:
+                break
+            }
         default:
             break
         }

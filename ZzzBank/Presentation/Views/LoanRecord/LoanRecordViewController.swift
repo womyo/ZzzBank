@@ -7,9 +7,11 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 class LoanRecordViewController: UIViewController {
     private let viewModel: LoanViewModel
+    private var cancellables = Set<AnyCancellable>()
     
     private let dateSectionLabel: UILabel = {
         let label = UILabel()
@@ -60,19 +62,27 @@ class LoanRecordViewController: UIViewController {
     
     private lazy var settingButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.title = "1개월·전체·최신순"
         config.image = UIImage(systemName: "chevron.down")
         config.imagePlacement = .trailing
         config.baseForegroundColor = .white
         
         let button = UIButton(configuration: config, primaryAction: nil)
         button.addAction(UIAction { [weak self] _ in
-            let sheetViewController = RecordSettingViewController()
+            guard let self = self else { return }
+            
+            let sheetViewController = RecordSettingViewController(viewModel: self.viewModel)
             if let sheet = sheetViewController.sheetPresentationController {
                 sheet.detents = [.medium()]
             }
-            self?.present(sheetViewController, animated: true, completion: nil)
+            self.present(sheetViewController, animated: true, completion: nil)
         }, for: .touchUpInside)
+        
+        button.configurationUpdateHandler = { [weak self] button in
+            guard let self = self else { return }
+            var config = button.configuration
+            config?.title = "1개월·\(self.viewModel.recordType.rawValue)·\(self.viewModel.recordSort.rawValue)"
+            button.configuration = config
+        }
         
         return button
     }()
@@ -89,10 +99,24 @@ class LoanRecordViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Records"
-        viewModel.changeCombinedRepaymentsToDict()
+        viewModel.changeCombinedRepaymentsToDict(type: .all, sort: .ascend)
         
         configure()
         configureUI()
+        
+        viewModel.$combinedRecordsForDict
+            .receive(on: DispatchQueue.main)
+            .sink { _ in
+                self.tableView.reloadData()
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$keys
+            .receive(on: DispatchQueue.main)
+            .sink { _ in
+                self.tableView.reloadData()
+            }
+            .store(in: &cancellables)
     }
     
     private func configure() {
@@ -103,6 +127,10 @@ class LoanRecordViewController: UIViewController {
         let today = Date()
         
         dateSectionLabel.text = "\(dateFormatter.string(from: monthAgo)) ~ \(dateFormatter.string(from: today)) (\(viewModel.combinedRecordsCount)건)"
+        
+        viewModel.selectedPath1 = IndexPath(row: 1, section: 0)
+        viewModel.selectedPath2 = IndexPath(row: 0, section: 0)
+        viewModel.selectedPath3 = IndexPath(row: 0, section: 0)
     }
     
     private func configureUI() {

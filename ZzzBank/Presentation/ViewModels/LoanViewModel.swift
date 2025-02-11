@@ -8,6 +8,17 @@
 import Foundation
 import RealmSwift
 
+enum RecordType: String {
+    case all = "All"
+    case borrowed = "Borrowed"
+    case repaid = "Repaid"
+}
+
+enum RecordSort: String {
+    case ascend = "Ascend"
+    case descend = "Descend"
+}
+
 final class LoanViewModel: ObservableObject {
     private let realm = RealmManager.shared
     @Published var timeValue: CGFloat = 0.0
@@ -15,8 +26,15 @@ final class LoanViewModel: ObservableObject {
     @Published var combinedRecords: [DateSortable] = []
     @Published var combinedRecordsForDict: [Date: [DateSortable]] = [:]
     var combinedRecordsCount: Int = 0
-    var keys: [Date] = []
+    @Published var keys: [Date] = []
     @Published var condition: Condition = .healthy
+    
+    var selectedPath1: IndexPath = IndexPath(row: 1, section: 0)
+    var selectedPath2: IndexPath = IndexPath(row: 0, section: 0)
+    var selectedPath3: IndexPath = IndexPath(row: 0, section: 0)
+    
+    var recordType: RecordType = .all
+    var recordSort: RecordSort = .ascend
     
     func saveLoan() {
         let loan = LoanRecord()
@@ -71,8 +89,25 @@ final class LoanViewModel: ObservableObject {
         return realm.read(RepayRecord.self)
     }
     
-    func changeCombinedRepaymentsToDict() {
-        combinedRecordsForDict = [:]
+    func getCombinedRecords(type: RecordType) {
+        switch type {
+        case .all:
+            let loanRecords = getLoanRecords()
+            let repayRecords = getRepaymentRecords()
+            
+            combinedRecords = Array(loanRecords) + Array(repayRecords)
+        case .borrowed:
+            combinedRecords = Array(getLoanRecords())
+        case .repaid:
+            combinedRecords = Array(getRepaymentRecords())
+        }
+        combinedRecords = combinedRecords.sorted { $0.date > $1.date }
+    }
+    
+    func changeCombinedRepaymentsToDict(type: RecordType, sort: RecordSort) {
+        getCombinedRecords(type: type)
+        
+        combinedRecordsForDict.removeAll()
         combinedRecordsCount = 0
         
         let dateFormatter = DateFormatter()
@@ -93,7 +128,12 @@ final class LoanViewModel: ObservableObject {
             }
         }
         
-        keys = Array(combinedRecordsForDict.keys).sorted(by: >)
+        switch sort {
+        case .ascend:
+            keys = Array(combinedRecordsForDict.keys).sorted(by: >)
+        case .descend:
+            keys = Array(combinedRecordsForDict.keys).sorted(by: <)
+        }
     }
     func payLoad(amount: Int) {
         let loanLimit = realm.read(LoanLimit.self)[0]

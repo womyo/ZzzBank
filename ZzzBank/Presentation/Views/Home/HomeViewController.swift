@@ -149,11 +149,7 @@ class HomeViewController: UIViewController {
     }
     
     private func configure() {
-        let loanRecords = viewModel.getLoanRecords()
-        let repayRecords = viewModel.getRepaymentRecords()
-        
-        viewModel.combinedRecords = Array(loanRecords) + Array(repayRecords)
-        viewModel.combinedRecords = viewModel.combinedRecords.sorted { $0.date > $1.date }
+        viewModel.getCombinedRecords(type: .all)
         
         let borrowed = 24 - viewModel.getLoanLimit()
         let debt = viewModel.getDebt()
