@@ -7,9 +7,9 @@
 
 import Foundation
 
-enum Condition {
-    case healthy
-    case tired
-    case exhausted
-    case unwell
+enum Condition: Double {
+    case healthy = 0.0
+    case tired = 33.0
+    case exhausted = 66.0
+    case unwell = 100.0
 }
