@@ -14,18 +14,19 @@ class LoanViewController: UIViewController {
     
     private lazy var confirmButton: UIButton = {
         let button = UIButton()
-        button.setTitle("대출 신청", for: .normal)
+        button.setTitle("Confirm", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .blue
+        button.backgroundColor = .mainColor
         button.layer.cornerRadius = 12
         button.addAction(UIAction { [weak self] _ in
             if let timeValue = self?.viewModel.timeValue, timeValue > 0 {
                 self?.viewModel.saveLoan()
                 self?.viewModel.updateLoanLimit()
                 self?.navigationController?.popViewController(animated: true)
-                // 대출 상환 5일뒤 알림 등록해야함
             } else {
-                
+                let alertController = UIAlertController(title: "No time set", message: "Please set how many hours you want to borrow.", preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self?.present(alertController, animated: true, completion: nil)
             }
         }, for: .touchUpInside)
         return button
@@ -43,7 +44,7 @@ class LoanViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .customBackgroundColor
-        navigationItem.title = "잠은행"
+        navigationItem.title = "ZzzBank"
         configureUI()
     }
     
@@ -54,7 +55,7 @@ class LoanViewController: UIViewController {
         view.addSubview(queueSystemView)
         queueSystemVC.didMove(toParent: self)
         
-        let gaugeVC = UIHostingController(rootView: GaugeView())
+        let gaugeVC = UIHostingController(rootView: GaugeView(viewModel: viewModel))
         let gaugeView = gaugeVC.view!
         view.addSubview(gaugeView)
         gaugeVC.didMove(toParent: self)
@@ -84,7 +85,7 @@ class LoanViewController: UIViewController {
         confirmButton.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().offset(-16)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-16)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-24)
             $0.height.equalTo(50)
         }
     }

@@ -37,12 +37,12 @@ struct CircularSliderView: View {
             
             Circle()
                 .trim(from: 0.0, to: viewModel.timeValue / config().totalValue)
-                .stroke(.blue, lineWidth: 7)
+                .stroke(.main, lineWidth: 7)
                 .frame(width: config().radius*2, height: config().radius*2)
                 .rotationEffect(.degrees(-90))
             
             Circle()
-                .fill(.blue)
+                .fill(.main)
                 .frame(width: config().knobRadius*2, height: config().knobRadius*2)
                 .padding(10)
                 .offset(y: -config().radius)
@@ -59,7 +59,7 @@ struct CircularSliderView: View {
                     .foregroundStyle(.white)
                 
                 HStack {
-                    Text("⏳ 대출 한도: \(String.init(format: "%.0f", config().maximumValue)) h")
+                    Text("⏳ Loan Limit: \(String.init(format: "%.0f", config().maximumValue)) h")
                         .font(.system(size: 10))
                         .foregroundStyle(.white)
                 }
