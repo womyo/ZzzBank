@@ -8,6 +8,12 @@
 import Foundation
 import RealmSwift
 
+enum Term: String {
+    case week = "1 Week"
+    case month = "1 Month"
+    case year = "1 Year"
+}
+
 enum RecordType: String {
     case all = "All"
     case borrowed = "Borrowed"
@@ -15,8 +21,8 @@ enum RecordType: String {
 }
 
 enum RecordSort: String {
-    case ascend = "Ascend"
-    case descend = "Descend"
+    case newest = "Newest"
+    case oldest = "Oldest"
 }
 
 final class LoanViewModel: ObservableObject {
@@ -28,13 +34,15 @@ final class LoanViewModel: ObservableObject {
     var combinedRecordsCount: Int = 0
     @Published var keys: [Date] = []
     @Published var condition: Condition = .healthy
+    @Published var ago = Calendar.current.date(byAdding: .month, value: -1, to: Date())!
     
     var selectedPath1: IndexPath = IndexPath(row: 1, section: 0)
     var selectedPath2: IndexPath = IndexPath(row: 0, section: 0)
     var selectedPath3: IndexPath = IndexPath(row: 0, section: 0)
     
+    var term: Term = .month
     var recordType: RecordType = .all
-    var recordSort: RecordSort = .ascend
+    var recordSort: RecordSort = .newest
     
     func saveLoan() {
         let loan = LoanRecord()
@@ -42,7 +50,7 @@ final class LoanViewModel: ObservableObject {
         loan.loanTimeCP = Int(timeValue)
         realm.write(loan)
         
-        NotificationManager.shared.scheduleNotification(id: loan.id, endDate: loan.date) // 대출 마감 당일에 알람 등록
+        NotificationManager.shared.scheduleNotification(id: loan.id, endDate: loan.repaymentDate) // 대출 마감 당일에 알람 등록
     }
 
     func getLoanLimit() -> Int {
@@ -104,7 +112,7 @@ final class LoanViewModel: ObservableObject {
         combinedRecords = combinedRecords.sorted { $0.date > $1.date }
     }
     
-    func changeCombinedRepaymentsToDict(type: RecordType, sort: RecordSort) {
+    func changeCombinedRepaymentsToDict(term: Term, type: RecordType, sort: RecordSort) {
         getCombinedRecords(type: type)
         
         combinedRecordsForDict.removeAll()
@@ -113,13 +121,20 @@ final class LoanViewModel: ObservableObject {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"
         
-        let monthAgo = Calendar.current.date(byAdding: .month, value: -1, to: Date())!
+        switch term {
+        case .week:
+            ago = Calendar.current.date(byAdding: .weekOfMonth, value: -1, to: Date())!
+        case .month:
+            ago = Calendar.current.date(byAdding: .month, value: -1, to: Date())!
+        case .year:
+            ago = Calendar.current.date(byAdding: .year, value: -1, to: Date())!
+        }
         let today = Date()
         
         for record in combinedRecords {
             let recordDate = Calendar.current.startOfDay(for: record.date)
             
-            if monthAgo < recordDate && recordDate < today {
+            if ago < recordDate && recordDate < today {
                 if !combinedRecordsForDict.keys.contains(recordDate) {
                     combinedRecordsForDict[recordDate] = []
                 }
@@ -129,9 +144,9 @@ final class LoanViewModel: ObservableObject {
         }
         
         switch sort {
-        case .ascend:
+        case .newest:
             keys = Array(combinedRecordsForDict.keys).sorted(by: >)
-        case .descend:
+        case .oldest:
             keys = Array(combinedRecordsForDict.keys).sorted(by: <)
         }
     }
@@ -140,7 +155,10 @@ final class LoanViewModel: ObservableObject {
         let loanRecords = realm.read(LoanRecord.self)
         var remainingAmount = amount
         
-        saveRepayment(amount)
+        // borrowed가 0이면
+        if loanRecords.reduce(0, { $0 + $1.loanTimeCP }) != 0 {
+            saveRepayment(amount)
+        }
         
         for loanRecord in loanRecords {
             var shouldDelete = false
