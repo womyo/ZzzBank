@@ -57,7 +57,7 @@ class HistoryTableViewCell: UITableViewCell {
         
         dotView.snp.makeConstraints {
             $0.width.height.equalTo(10)
-            $0.leading.equalToSuperview().offset(16)
+            $0.leading.equalToSuperview().offset(32)
             $0.centerY.equalToSuperview()
         }
         
@@ -89,7 +89,7 @@ class HistoryTableViewCell: UITableViewCell {
             infoLabel.text = "Borrowed \(loan.loanTime) hours"
             dateLabel.text = "\(dateFormatter.string(from: loan.date))"
         } else if let repayment = record as? RepayRecord {
-            infoLabel.text = "Repay \(repayment.repayTime) hours"
+            infoLabel.text = "Repaid \(repayment.repayTime) hours"
             dateLabel.text = "\(dateFormatter.string(from: repayment.date))"
         }
     }
