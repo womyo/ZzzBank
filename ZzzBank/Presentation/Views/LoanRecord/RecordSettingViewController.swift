@@ -22,37 +22,41 @@ class RecordSettingViewController: UIViewController {
     
     private let settingLabel: UILabel = {
         let label = UILabel()
-        label.text = "조회 조건 설정"
+        label.text = "View Options"
+        label.font = .systemFont(ofSize: 20, weight: .bold)
         return label
     }()
     
     private let termLabel: UILabel = {
         let label = UILabel()
-        label.text = "조회기간"
+        label.text = "Range"
+        label.font = .systemFont(ofSize: 16, weight: .semibold)
         return label
     }()
     
     private let typeLabel: UILabel = {
         let label = UILabel()
-        label.text = "유형"
+        label.text = "Type"
+        label.font = .systemFont(ofSize: 16, weight: .semibold)
         return label
     }()
     
     private let sortLabel: UILabel = {
         let label = UILabel()
-        label.text = "정렬"
+        label.text = "Sort"
+        label.font = .systemFont(ofSize: 16, weight: .semibold)
         return label
     }()
     
     private lazy var checkButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Check", for: .normal)
+        button.setTitle("Apply", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .blue
+        button.backgroundColor = .mainColor
         button.layer.cornerRadius = 12
         button.addAction(UIAction { [weak self] _ in
             guard let self = self else { return }
-            self.viewModel.changeCombinedRepaymentsToDict(type: self.viewModel.recordType, sort: self.viewModel.recordSort)
+            self.viewModel.changeCombinedRepaymentsToDict(term: self.viewModel.term ,type: self.viewModel.recordType, sort: self.viewModel.recordSort)
             self.dismiss(animated: true, completion: nil)
         }, for: .touchUpInside)
         
@@ -153,6 +157,7 @@ class RecordSettingViewController: UIViewController {
         checkButton.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().offset(-16)
+            $0.top.equalTo(collectionView3.snp.bottom).offset(16)
             $0.bottom.equalToSuperview().offset(-32)
             $0.height.equalTo(50)
         }
@@ -177,14 +182,14 @@ extension RecordSettingViewController: UICollectionViewDelegate, UICollectionVie
         
         switch collectionView.tag {
         case 1:
-            alist = ["1주일", "1개월", "3개월"]
-            cell.layer.borderColor = (indexPath == viewModel.selectedPath1) ? UIColor.systemBlue.cgColor : UIColor.systemGray.cgColor
+            alist = ["1 Week", "1 Month", "1 Year"]
+            cell.layer.borderColor = (indexPath == viewModel.selectedPath1) ? UIColor.mainColor.cgColor : UIColor.systemGray.cgColor
         case 2:
-            alist = ["전체", "Borrowed", "Repaid"]
-            cell.layer.borderColor = (indexPath == viewModel.selectedPath2) ? UIColor.systemBlue.cgColor : UIColor.systemGray.cgColor
+            alist = ["All", "Borrowed", "Repaid"]
+            cell.layer.borderColor = (indexPath == viewModel.selectedPath2) ? UIColor.mainColor.cgColor : UIColor.systemGray.cgColor
         case 3:
-            alist = ["최신순", "과거순"]
-            cell.layer.borderColor = (indexPath == viewModel.selectedPath3) ? UIColor.systemBlue.cgColor : UIColor.systemGray.cgColor
+            alist = ["Newest", "Oldest"]
+            cell.layer.borderColor = (indexPath == viewModel.selectedPath3) ? UIColor.mainColor.cgColor : UIColor.systemGray.cgColor
         default:
             break
         }
@@ -193,7 +198,7 @@ extension RecordSettingViewController: UICollectionViewDelegate, UICollectionVie
         
         cell.layer.cornerRadius = 8
         cell.layer.masksToBounds = true
-        cell.layer.borderWidth = 1
+        cell.layer.borderWidth = 1.5
         
         return cell
     }
@@ -222,6 +227,17 @@ extension RecordSettingViewController: UICollectionViewDelegate, UICollectionVie
         switch collectionView.tag {
         case 1:
             viewModel.selectedPath1 = indexPath
+            
+            switch viewModel.selectedPath1.row {
+            case 0:
+                viewModel.term = .week
+            case 1:
+                viewModel.term = .month
+            case 2:
+                viewModel.term = .year
+            default:
+                break
+            }
         case 2:
             viewModel.selectedPath2 = indexPath
             
@@ -240,9 +256,9 @@ extension RecordSettingViewController: UICollectionViewDelegate, UICollectionVie
             
             switch viewModel.selectedPath3.row {
             case 0:
-                viewModel.recordSort = .ascend
+                viewModel.recordSort = .newest
             case 1:
-                viewModel.recordSort = .descend
+                viewModel.recordSort = .oldest
             default:
                 break
             }

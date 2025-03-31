@@ -32,39 +32,15 @@ class LoanRecordViewController: UIViewController {
         
         return tableView
     }()
-    
-    private let repaymentTextField: UITextField = {
-        let textfield = UITextField()
-        textfield.placeholder = "수면 시간"
-        textfield.keyboardType = .numberPad
-        
-        return textfield
-    }()
-    
-    private lazy var repaymentButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("잠 상환", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .systemBlue
-        
-        button.addAction(UIAction { [weak self] _ in
-            if let text = self?.repaymentTextField.text, let repaymentValue = Int(text) {
-                let amount = repaymentValue - UserDefaults.standard.integer(forKey: "personSleep")
-                
-                if amount > 0 {
-                    self?.viewModel.payLoad(amount: amount)
-                    self?.navigationController?.popViewController(animated: true)
-                }
-            }
-        }, for: .touchUpInside)
-        return button
-    }()
-    
+     
     private lazy var settingButton: UIButton = {
         var config = UIButton.Configuration.plain()
         config.image = UIImage(systemName: "chevron.down")
         config.imagePlacement = .trailing
         config.baseForegroundColor = .white
+        
+        let title = AttributedString("Options", attributes: AttributeContainer([.font: UIFont.systemFont(ofSize: 15)]))
+        config.attributedTitle = title
         
         let button = UIButton(configuration: config, primaryAction: nil)
         button.addAction(UIAction { [weak self] _ in
@@ -73,16 +49,11 @@ class LoanRecordViewController: UIViewController {
             let sheetViewController = RecordSettingViewController(viewModel: self.viewModel)
             if let sheet = sheetViewController.sheetPresentationController {
                 sheet.detents = [.medium()]
+                sheet.prefersGrabberVisible = true
+                sheet.preferredCornerRadius = 24
             }
-            self.present(sheetViewController, animated: true, completion: nil)
+            self.present(sheetViewController, animated: true)
         }, for: .touchUpInside)
-        
-        button.configurationUpdateHandler = { [weak self] button in
-            guard let self = self else { return }
-            var config = button.configuration
-            config?.title = "1개월·\(self.viewModel.recordType.rawValue)·\(self.viewModel.recordSort.rawValue)"
-            button.configuration = config
-        }
         
         return button
     }()
@@ -98,16 +69,36 @@ class LoanRecordViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Records"
-        viewModel.changeCombinedRepaymentsToDict(type: .all, sort: .ascend)
+        navigationItem.title = "History"
         
         configure()
         configureUI()
+        bind()
+    }
+    
+    private func configure() {
+        viewModel.term = .month
+        viewModel.recordType = .all
+        viewModel.recordSort = .newest
+        
+        viewModel.selectedPath1 = IndexPath(row: 1, section: 0)
+        viewModel.selectedPath2 = IndexPath(row: 0, section: 0)
+        viewModel.selectedPath3 = IndexPath(row: 0, section: 0)
+        
+        viewModel.changeCombinedRepaymentsToDict(term: viewModel.term, type: viewModel.recordType, sort: viewModel.recordSort)
+    }
+    
+    private func bind() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.MM.dd"
+        
+        let today = Date()
         
         viewModel.$combinedRecordsForDict
             .receive(on: DispatchQueue.main)
             .sink { _ in
                 self.tableView.reloadData()
+                self.dateSectionLabel.text = "\(dateFormatter.string(from: self.viewModel.ago)) ~ \(dateFormatter.string(from: today)) (\(self.viewModel.combinedRecordsCount) items)"
             }
             .store(in: &cancellables)
         
@@ -119,45 +110,18 @@ class LoanRecordViewController: UIViewController {
             .store(in: &cancellables)
     }
     
-    private func configure() {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy.MM.dd"
-        
-        let monthAgo = Calendar.current.date(byAdding: .month, value: -1, to: Date())!
-        let today = Date()
-        
-        dateSectionLabel.text = "\(dateFormatter.string(from: monthAgo)) ~ \(dateFormatter.string(from: today)) (\(viewModel.combinedRecordsCount)건)"
-        
-        viewModel.selectedPath1 = IndexPath(row: 1, section: 0)
-        viewModel.selectedPath2 = IndexPath(row: 0, section: 0)
-        viewModel.selectedPath3 = IndexPath(row: 0, section: 0)
-    }
-    
     private func configureUI() {
         view.backgroundColor = .customBackgroundColor
         view.addSubview(dateSectionLabel)
         view.addSubview(tableView)
-        view.addSubview(repaymentTextField)
-        view.addSubview(repaymentButton)
         view.addSubview(settingButton)
         
-        repaymentTextField.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            $0.leading.equalToSuperview().offset(16)
-        }
-        
-        repaymentButton.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            $0.leading.equalTo(repaymentTextField.snp.trailing).offset(16)
-        }
-        
         settingButton.snp.makeConstraints {
-            $0.top.equalTo(repaymentTextField.snp.bottom).offset(16)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
             $0.trailing.equalToSuperview()
         }
         
         dateSectionLabel.snp.makeConstraints {
-//            $0.top.equalTo(settingButton.snp.bottom).offset(16)
             $0.centerY.equalTo(settingButton.snp.centerY)
             $0.leading.equalToSuperview().offset(16)
         }
@@ -189,6 +153,7 @@ extension LoanRecordViewController: UITableViewDataSource, UITableViewDelegate {
         
         if let records = viewModel.combinedRecordsForDict[viewModel.keys[indexPath.section]] {
             let record = records[indexPath.row]
+            
             cell.configure(with: record)
         }
         

@@ -55,6 +55,14 @@ class LoanRecordTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        dateLabel.text = nil
+        flagLabel.text = nil
+        infoLabel.text = nil
+        loanStatusLabel.text = nil
+    }
+    
     private func configureUI() {
         contentView.addSubview(stackView)
         contentView.addSubview(infoStackView)
@@ -76,7 +84,7 @@ class LoanRecordTableViewCell: UITableViewCell {
         
         if let loan = record as? LoanRecord {
             flagLabel.text = "Borrowed"
-            flagLabel.textColor = .systemBlue
+            flagLabel.textColor = .mainColor
             infoLabel.text = "\(loan.loanTime) hours"
             dateLabel.text = "\(dateFormatter.string(from: loan.date))"
             
@@ -90,20 +98,33 @@ class LoanRecordTableViewCell: UITableViewCell {
             } else {
                 if let days = dateComponents.day {
                     if loanDate > today {
-                        loanStatusLabel.text = "상환 마감까지 \(days)일"
+                        loanStatusLabel.text = "\(days) days until due"
                     } else if loanDate == today {
-                        loanStatusLabel.text = "상환 마감 당일"
+                        loanStatusLabel.text = "Due today"
                     } else {
-                        loanStatusLabel.text = "상환 마감 \(abs(days))일 초과. 연체 이자: \(loan.overdueInterest)"
+                        loanStatusLabel.text = "Overdue by \(abs(days)) days. Interest: \(loan.overdueInterest)h"
                     }
                 }
             }
 
         } else if let repayment = record as? RepayRecord {
             flagLabel.text = "Repaid"
-            flagLabel.textColor = .systemRed
+            flagLabel.textColor = .oppositeColor
             infoLabel.text = "\(repayment.repayTime) hours"
             dateLabel.text = "\(dateFormatter.string(from: repayment.date))"
+            
+            switch repayment.repayTime {
+            case 1, 2:
+                loanStatusLabel.text = "Light rest"
+            case 3, 4:
+                loanStatusLabel.text = "Energy restored"
+            case 5, 6:
+                loanStatusLabel.text = "Fully recharged"
+            case 7...:
+                loanStatusLabel.text = "Deep recovery"
+            default:
+                loanStatusLabel.text = ""
+            }
         }
     }
 }
