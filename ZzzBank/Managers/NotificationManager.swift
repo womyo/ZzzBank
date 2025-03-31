@@ -16,14 +16,14 @@ class NotificationManager {
     
     func scheduleNotification(id: String, endDate: Date) {
         let content = UNMutableNotificationContent()
-        content.title = "잠은행"
+        content.title = "ZzzBank"
         content.body = "대출 마감 당일입니다!"
         content.sound = .default
         
         content.userInfo = ["body": content.body]
         
         var dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: endDate)
-        dateComponents.hour = 14
+        dateComponents.hour = 10
         
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
         let request = UNNotificationRequest(identifier: "Notification-\(id)", content: content, trigger: trigger)
