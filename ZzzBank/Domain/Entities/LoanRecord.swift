@@ -21,7 +21,7 @@ final class LoanRecord: Object, DateSortable {
     @objc dynamic var repaymentDate: Date = {
         let current = Date()
         let calendar = Calendar.current
-        return calendar.date(byAdding: .day, value: 0, to: current)!
+        return calendar.date(byAdding: .day, value: 7, to: current)!
     }()
     
     override static func primaryKey() -> String? {
