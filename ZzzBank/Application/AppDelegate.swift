@@ -10,7 +10,8 @@ import BackgroundTasks
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    private let viewModel = LoanViewModel()
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         HealthKitManager.shared.configure()
         
@@ -18,8 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if userDefaults.value(forKey: "appFirstOpen") == nil {
             userDefaults.setValue(true, forKey: "appFirstOpen")
-            userDefaults.setValue(8, forKey: "personSleep")
-            
+            userDefaults.setValue(7, forKey: "personSleep")
             let loanLimit = LoanLimit()
             RealmManager.shared.write(loanLimit)
         }
@@ -47,24 +47,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func handleBackgroundTask(task: BGAppRefreshTask) {
-        DispatchQueue.main.async { 
-            let viewModel = LoanViewModel()
-            let calendar = Calendar.current
-            
+        let group = DispatchGroup()
+        
+        group.enter()
+        DispatchQueue.global(qos: .background).async {
             HealthKitManager.shared.getSleepData() { result in
-                viewModel.payLoad(amount: result - UserDefaults.standard.integer(forKey: "personSleep"))
-            }
-            
-            viewModel.getLoanRecords().enumerated().forEach { index, loanRecord in
-                let dateComponents = calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: calendar.startOfDay(for: loanRecord.repaymentDate))
-                
-                if let days = dateComponents.day, Date() > loanRecord.repaymentDate {
-                    viewModel.updateLoanRecords(index: index, overdueDays: abs(days))
+                let amount = result - UserDefaults.standard.integer(forKey: "personSleep")
+                if amount > 0 {
+                    self.viewModel.payLoad(amount: amount)
                 }
             }
+            group.leave()
         }
-        scheduleBackgroundTask()
-        task.setTaskCompleted(success: true)
+        
+        group.enter()
+        DispatchQueue.global(qos: .background).async {
+            self.viewModel.getLoanRecords().enumerated().forEach { index, loanRecord in
+                if Date() > loanRecord.repaymentDate {
+                    let overdueDays = Calendar.current.dateComponents([.day], from: loanRecord.repaymentDate, to: Date()).day ?? 0
+                    self.viewModel.updateLoanRecords(index: index, overdueDays: overdueDays)
+                }
+            }
+            group.leave()
+        }
+        
+        group.notify(queue: .main) {
+            self.scheduleBackgroundTask()
+            task.setTaskCompleted(success: true)
+        }
     }
     
     func scheduleBackgroundTask() {
