@@ -178,13 +178,13 @@
 				DEVELOPMENT_TEAM = 4C5QZ5DXV6;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ZzzBank/Info.plist;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "수면 정보를 위해 데이터 접근 권한이 필요합니다.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "수면 정보를 위해 데이터 접근 권한이 필요합니다.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app requires access to your sleep data to track and help you repay sleep.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app requires access to your sleep data to track and help you repay sleep.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -192,9 +192,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.harrylee.ZzzBank;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -209,13 +213,13 @@
 				DEVELOPMENT_TEAM = 4C5QZ5DXV6;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ZzzBank/Info.plist;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "수면 정보를 위해 데이터 접근 권한이 필요합니다.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "수면 정보를 위해 데이터 접근 권한이 필요합니다.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app requires access to your sleep data to track and help you repay sleep.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app requires access to your sleep data to track and help you repay sleep.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -223,9 +227,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.harrylee.ZzzBank;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
