@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3C6586D62DA60F670014C462 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 3C6586D52DA60F670014C462 /* FirebaseFirestore */; };
+		3C6586D82DA60F670014C462 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 3C6586D72DA60F670014C462 /* FirebaseMessaging */; };
 		C280A35B2D30326D00E74D7A /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = C280A35A2D30326D00E74D7A /* SnapKit */; };
 		C280A38E2D3038F400E74D7A /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C280A38D2D3038F400E74D7A /* RealmSwift */; };
 		C280A38F2D3038FD00E74D7A /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = C280A38D2D3038F400E74D7A /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -56,8 +58,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C6586D82DA60F670014C462 /* FirebaseMessaging in Frameworks */,
 				C280A38E2D3038F400E74D7A /* RealmSwift in Frameworks */,
 				C280A35B2D30326D00E74D7A /* SnapKit in Frameworks */,
+				3C6586D62DA60F670014C462 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,6 +107,8 @@
 			packageProductDependencies = (
 				C280A35A2D30326D00E74D7A /* SnapKit */,
 				C280A38D2D3038F400E74D7A /* RealmSwift */,
+				3C6586D52DA60F670014C462 /* FirebaseFirestore */,
+				3C6586D72DA60F670014C462 /* FirebaseMessaging */,
 			);
 			productName = ZzzBank;
 			productReference = C220C1F02D2B999B00321039 /* ZzzBank.app */;
@@ -135,6 +141,7 @@
 			packageReferences = (
 				C280A3592D30326D00E74D7A /* XCRemoteSwiftPackageReference "SnapKit" */,
 				C280A38C2D3038F400E74D7A /* XCRemoteSwiftPackageReference "realm-swift" */,
+				3C6586D42DA60F670014C462 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C220C1F12D2B999B00321039 /* Products */;
@@ -380,6 +387,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		3C6586D42DA60F670014C462 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.11.0;
+			};
+		};
 		C280A3592D30326D00E74D7A /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit";
@@ -399,6 +414,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		3C6586D52DA60F670014C462 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3C6586D42DA60F670014C462 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		3C6586D72DA60F670014C462 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3C6586D42DA60F670014C462 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
 		C280A35A2D30326D00E74D7A /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C280A3592D30326D00E74D7A /* XCRemoteSwiftPackageReference "SnapKit" */;
