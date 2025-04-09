@@ -21,7 +21,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 
         window = UIWindow(windowScene: windowScene)
         let viewController = TabBarController()
-    
+        
+        //        if UserDefaults.standard.value(forKey: "personSleep") == nil {
+        //            window?.rootViewController = UINavigationController(rootViewController: OnboardingPageViewController())
+        //        } else {
+        //            window?.rootViewController = UINavigationController(rootViewController: TabBarController())
+        //        }
+        
         window?.rootViewController = UINavigationController(rootViewController: viewController)
         window?.makeKeyAndVisible()
         requestNotificationAuthorization()
@@ -53,8 +59,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Called as the scene transitions from the foreground to the background.
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        appDelegate.scheduleBackgroundTask()
     }
 }
 
