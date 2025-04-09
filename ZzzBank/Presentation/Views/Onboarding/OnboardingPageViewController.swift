@@ -9,12 +9,18 @@ import UIKit
 import SnapKit
 
 class OnboardingPageViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
-    private let pages: [UIViewController] = [OnboardingViewController1(), OnboardingViewController2()]
+    private let viewModel = OnboardingViewModel()
+    private lazy var pages: [UIViewController] = {
+        let pages = [OnboardingViewController1(viewModel: viewModel), OnboardingViewController2(viewModel: viewModel)]
+        
+        return pages
+    }()
+    
     private lazy var pageControl: UIPageControl = {
         let pageControl = UIPageControl()
         pageControl.currentPage = 0
         pageControl.numberOfPages = pages.count
-        pageControl.currentPageIndicatorTintColor = .customBackgroundColor
+        pageControl.currentPageIndicatorTintColor = .white
         pageControl.pageIndicatorTintColor = .lightGray
         pageControl.addTarget(self, action: #selector(handlePageControl(_:)), for: .valueChanged)
         
@@ -33,6 +39,10 @@ class OnboardingPageViewController: UIPageViewController, UIPageViewControllerDa
         super.viewDidLoad()
         dataSource = self
         delegate = self
+        
+        if let firstVC = pages.first {
+            setViewControllers([firstVC], direction: .forward, animated: true, completion: nil)
+        }
         
         configureUI()
     }
@@ -68,12 +78,12 @@ class OnboardingPageViewController: UIPageViewController, UIPageViewControllerDa
         guard let currentIndex = pages.firstIndex(of: viewController) else { return nil }
         let nextIndex = currentIndex + 1
         
-        return currentIndex < pages.count ? pages[nextIndex] : nil
+        return nextIndex < pages.count ? pages[nextIndex] : nil
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-        if completed, let visibleVC = viewControllers?.first, let page = pages.firstIndex(of: visibleVC) {
-            pageControl.currentPage = page
+        if completed, let visibleVC = viewControllers?.first, let index = pages.firstIndex(of: visibleVC) {
+            pageControl.currentPage = index
         }
     }
 }
