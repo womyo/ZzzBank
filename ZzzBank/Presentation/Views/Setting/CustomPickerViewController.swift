@@ -55,14 +55,21 @@ class CustomPickerViewController: UIViewController {
             guard let self = self else { return }
             
             self.checkButton.animatePress {
-                let selectedRow = self.pickerView.selectedRow(inComponent: 0)
-                let value = self.pickerData[selectedRow]
-                let amount = Int(value)! - UserDefaults.standard.integer(forKey: "personSleep")
-                if amount > 0 {
-                    self.viewModel.payLoad(amount: amount)
-                    self.dismiss(animated: true, completion: nil)
+                if self.viewModel.getLoanRecordsTotal() > 0 {
+                    let selectedRow = self.pickerView.selectedRow(inComponent: 0)
+                    let value = self.pickerData[selectedRow]
+                    let amount = Int(value)! - UserDefaults.standard.integer(forKey: "personSleep")
+                    
+                    if amount > 0 {
+                        self.viewModel.payLoad(amount: amount)
+                        self.dismiss(animated: true, completion: nil)
+                    } else {
+                        let alertController = UIAlertController(title: "Not enough sleep to repay", message: "You need at least \(UserDefaults.standard.integer(forKey: "personSleep") + 1) hours of sleep to repay.", preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                        self.present(alertController, animated: true, completion: nil)
+                    }
                 } else {
-                    let alertController = UIAlertController(title: "Not enough sleep to repay", message: "You need at least \(UserDefaults.standard.integer(forKey: "personSleep") + 1) hours of sleep to repay.", preferredStyle: .alert)
+                    let alertController = UIAlertController(title: "No debt to repay", message: "You borrowed nothing yet.", preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                     self.present(alertController, animated: true, completion: nil)
                 }
