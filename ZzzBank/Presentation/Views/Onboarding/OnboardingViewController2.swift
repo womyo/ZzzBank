@@ -7,6 +7,10 @@
 
 import UIKit
 
+extension Notification.Name {
+    static let didFinishOnboarding = Notification.Name("didFinishOnboarding")
+}
+
 class OnboardingViewController2: UIViewController {
     private let viewModel: OnboardingViewModel
     
@@ -14,7 +18,7 @@ class OnboardingViewController2: UIViewController {
         let label = UILabel()
         label.text = "With Apple Watch"
         label.textColor = .label
-        label.font = .systemFont(ofSize: 24, weight: .bold)
+        label.font = .systemFont(ofSize: 28, weight: .semibold)
         return label
     }()
     
@@ -26,13 +30,34 @@ class OnboardingViewController2: UIViewController {
         return imageView
     }()
     
+    private lazy var contentLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Apple Watch for smart sleep"
+        
+        return label
+    }()
+    
     private lazy var startButton: UIButton = {
         let button = UIButton()
         button.setTitle("Start", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .mainColor
+        button.layer.cornerRadius = 12
         button.addAction(UIAction { [weak self] _ in
             guard let self = self else { return }
             
             self.viewModel.setPersonalSleepGoal(1)
+            self.viewModel.setLoanLimit()
+            NotificationCenter.default.post(name: .didFinishOnboarding, object: nil)
+            
+            UIView.animate(withDuration: 0.1, animations: {
+                self.startButton.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+            }) { _ in
+                UIView.animate(withDuration: 0.1, animations: {
+                    self.startButton.transform = CGAffineTransform.identity
+                })
+            }
+            
         }, for: .touchUpInside)
         
         return button
@@ -41,6 +66,7 @@ class OnboardingViewController2: UIViewController {
     init(viewModel: OnboardingViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        
     }
     
     required init?(coder: NSCoder) {
@@ -55,12 +81,13 @@ class OnboardingViewController2: UIViewController {
     
     private func configureUI() {
         view.backgroundColor = .customBackgroundColor
-        view.addSubview(imageView)
         view.addSubview(titlelabel)
+        view.addSubview(imageView)
+        view.addSubview(contentLabel)
         view.addSubview(startButton)
         
         titlelabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
             $0.centerX.equalToSuperview()
         }
         
@@ -69,9 +96,16 @@ class OnboardingViewController2: UIViewController {
             $0.centerY.equalToSuperview()
         }
         
-        startButton.snp.makeConstraints {
-            $0.top.equalTo(imageView.snp.bottom).offset(48)
+        contentLabel.snp.makeConstraints {
+            $0.top.equalTo(imageView.snp.bottom).offset(16)
             $0.centerX.equalToSuperview()
+        }
+        
+        startButton.snp.makeConstraints {
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-24)
+            $0.centerX.equalToSuperview()
+            $0.width.equalTo(200)
+            $0.height.equalTo(50)
         }
     }
 }

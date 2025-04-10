@@ -13,4 +13,8 @@ final class OnboardingViewModel {
     func setPersonalSleepGoal(_ goal: Int) {
         UserDefaults.standard.setValue(goal, forKey: "personSleep")
     }
+    
+    func setLoanLimit() {
+        RealmManager.shared.write(LoanLimit())
+    }
 }

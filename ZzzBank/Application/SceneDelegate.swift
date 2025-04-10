@@ -11,26 +11,24 @@ import BackgroundTasks
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
-
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
+        UNUserNotificationCenter.current().delegate = self
+        
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(didFinishOnboarding), name: .didFinishOnboarding, object: nil
+        )
         guard let windowScene = (scene as? UIWindowScene) else { return }
-                
         window = UIWindow(windowScene: windowScene)
-        let viewController = TabBarController()
         
-        //        if UserDefaults.standard.value(forKey: "personSleep") == nil {
-        //            window?.rootViewController = UINavigationController(rootViewController: OnboardingPageViewController())
-        //        } else {
-        //            window?.rootViewController = UINavigationController(rootViewController: TabBarController())
-        //        }
+        if UserDefaults.standard.value(forKey: "didFinishOnboarding") == nil {
+            let viewController = OnboardingPageViewController()
+            window?.rootViewController = viewController
+        } else {
+            window?.rootViewController = UINavigationController(rootViewController: TabBarController())
+        }
         
-        window?.rootViewController = UINavigationController(rootViewController: viewController)
         window?.makeKeyAndVisible()
-        requestNotificationAuthorization()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -60,11 +58,29 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
     }
+    
+    @objc func didFinishOnboarding() {
+        UserDefaults.standard.set(true, forKey: "didFinishOnboarding")
+        
+        let viewController = TabBarController()
+        viewController.view.alpha = 0
+        
+        UIView.transition(with: self.window!, duration: 0.4, options: [.transitionCrossDissolve], animations: {
+            self.window?.rootViewController = UINavigationController(rootViewController: viewController)
+        }) { _ in
+            UIView.animate(withDuration: 0.2, animations: {
+                viewController.view.alpha = 1
+            }) { _ in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.requestNotificationAuthorization()
+                }
+            }
+        }
+    }
 }
 
 extension SceneDelegate: UNUserNotificationCenterDelegate {
     func requestNotificationAuthorization() {
-        UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             if granted {
                 UserDefaults.standard.set(true, forKey: "isAlert")
@@ -73,6 +89,7 @@ extension SceneDelegate: UNUserNotificationCenterDelegate {
                 UserDefaults.standard.set(false, forKey: "isAlert")
                 print("Notification authorization denied.")
             }
+            HealthKitManager.shared.configure()
         }
     }
     

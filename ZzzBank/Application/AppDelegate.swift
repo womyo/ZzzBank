@@ -18,16 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
-        HealthKitManager.shared.configure()
-        
-        let userDefaults = UserDefaults.standard
-        
-        if userDefaults.value(forKey: "appFirstOpen") == nil {
-            userDefaults.setValue(true, forKey: "appFirstOpen")
-            userDefaults.setValue(7, forKey: "personSleep")
-            let loanLimit = LoanLimit()
-            RealmManager.shared.write(loanLimit)
-        }
         
         application.registerForRemoteNotifications()
         Messaging.messaging().delegate = self
