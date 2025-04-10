@@ -13,7 +13,7 @@ class OnboardingViewController1: UIViewController {
     
     private let titlelabel: UILabel = {
         let label = UILabel()
-        label.text = "Sleep Goal"
+        label.text = "Set Your Sleep Goal"
         label.textColor = .label
         label.font = .systemFont(ofSize: 28, weight: .semibold)
         return label
@@ -29,21 +29,24 @@ class OnboardingViewController1: UIViewController {
     
     private lazy var contentLabel: UILabel = {
         let label = UILabel()
-        label.text = "How long do you usually sleep?"
+        label.text = "How many hours do you usually sleep in a day?"
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
         
         return label
     }()
     
     private lazy var stepperValueLabel: UILabel = {
         let label = UILabel()
-        label.text = "\(viewModel.value)h"
+        label.text = "\(viewModel.goal)h"
         
         return label
     }()
     
     private lazy var uiStepper: UIStepper = {
         let stepper = UIStepper()
-        stepper.value = Double(viewModel.value)
+        stepper.value = Double(viewModel.goal)
         stepper.minimumValue = 4
         stepper.maximumValue = 10
         stepper.stepValue = 1
@@ -73,6 +76,7 @@ class OnboardingViewController1: UIViewController {
     
     @objc private func stepperValueChange(_ sender: UIStepper) {
         let sleepValue = Int(sender.value)
+        viewModel.goal = sleepValue
         stepperValueLabel.text = "\(sleepValue)h"
     }
     

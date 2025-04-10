@@ -16,9 +16,13 @@ class OnboardingViewController2: UIViewController {
     
     private let titlelabel: UILabel = {
         let label = UILabel()
-        label.text = "With Apple Watch"
+        label.text = "Track Smarter\nwith Apple Watch"
         label.textColor = .label
         label.font = .systemFont(ofSize: 28, weight: .semibold)
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
+        
         return label
     }()
     
@@ -32,7 +36,10 @@ class OnboardingViewController2: UIViewController {
     
     private lazy var contentLabel: UILabel = {
         let label = UILabel()
-        label.text = "Apple Watch for smart sleep"
+        label.text = "Automatically record your sleep\nand wake-up times"
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
         
         return label
     }()
@@ -47,7 +54,7 @@ class OnboardingViewController2: UIViewController {
             guard let self = self else { return }
             
             self.startButton.animatePress(scale: 0.97) {
-                self.viewModel.setPersonalSleepGoal(self.viewModel.value)
+                self.viewModel.setPersonalSleepGoal()
                 self.viewModel.setLoanLimit()
                 NotificationCenter.default.post(name: .didFinishOnboarding, object: nil)
             }

@@ -71,6 +71,12 @@ final class LoanViewModel: ObservableObject {
         return realm.read(LoanRecord.self)
     }
     
+    func getLoanRecordsTotal() -> Int {
+        let loanRecords = realm.read(LoanRecord.self)
+        
+        return loanRecords.reduce(0) { $0 + $1.loanTimeCP }
+    }
+    
     func updateLoanRecords(index: Int, overdueDays: Int) {
         let loanRecord = realm.read(LoanRecord.self)[index]
         
@@ -155,8 +161,8 @@ final class LoanViewModel: ObservableObject {
         let loanRecords = realm.read(LoanRecord.self)
         var remainingAmount = amount
         
-        // borrowed가 0이면
-        if loanRecords.reduce(0, { $0 + $1.loanTimeCP }) != 0 {
+        // borrowed가 0보다 크면
+        if getLoanRecordsTotal() > 0 {
             saveRepayment(amount)
         }
         

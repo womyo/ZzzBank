@@ -107,27 +107,26 @@ class HomeViewController: UIViewController {
         containerView.addSubview(tableView)
         view.addSubview(loanButton)
         
-//        let skView = SKView(frame: self.view.bounds)
-//        skView.layer.zPosition = -1
-//        skView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-//        skView.ignoresSiblingOrder = true
-//        skView.clipsToBounds = true
-//        let scene = GameScene(viewModel: viewModel, size: CGSize(width: 200, height: 200))
-//        scene.scaleMode = .resizeFill
-//        scene.backgroundColor = .customBackgroundColor
-//        
-//        skView.presentScene(scene)
-//        view.addSubview(skView)
-//        
-//        skView.snp.makeConstraints {
-//            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-//            $0.centerX.equalToSuperview()
-//            $0.width.height.equalTo(100)
-//        }
+        let skView = SKView(frame: self.view.bounds)
+        skView.layer.zPosition = -1
+        skView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        skView.ignoresSiblingOrder = true
+        skView.clipsToBounds = true
+        let scene = GameScene(viewModel: viewModel, size: CGSize(width: 200, height: 200))
+        scene.scaleMode = .resizeFill
+        scene.backgroundColor = .customBackgroundColor
+        
+        skView.presentScene(scene)
+        view.addSubview(skView)
+        
+        skView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.centerX.equalToSuperview()
+            $0.width.height.equalTo(100)
+        }
         
         infoLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-//            $0.top.equalTo(skView.snp.bottom).offset(32)
+            $0.top.equalTo(skView.snp.bottom).offset(32)
             $0.centerX.equalToSuperview()
         }
         

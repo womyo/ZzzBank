@@ -8,9 +8,9 @@
 import Foundation
 
 final class OnboardingViewModel {
-    @Published var value = 7
+    @Published var goal = 7
     
-    func setPersonalSleepGoal(_ goal: Int) {
+    func setPersonalSleepGoal() {
         UserDefaults.standard.setValue(goal, forKey: "personSleep")
     }
     
