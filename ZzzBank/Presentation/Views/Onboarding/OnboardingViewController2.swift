@@ -46,18 +46,11 @@ class OnboardingViewController2: UIViewController {
         button.addAction(UIAction { [weak self] _ in
             guard let self = self else { return }
             
-            self.viewModel.setPersonalSleepGoal(1)
-            self.viewModel.setLoanLimit()
-            NotificationCenter.default.post(name: .didFinishOnboarding, object: nil)
-            
-            UIView.animate(withDuration: 0.1, animations: {
-                self.startButton.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-            }) { _ in
-                UIView.animate(withDuration: 0.1, animations: {
-                    self.startButton.transform = CGAffineTransform.identity
-                })
+            self.startButton.animatePress(scale: 0.97) {
+                self.viewModel.setPersonalSleepGoal(self.viewModel.value)
+                self.viewModel.setLoanLimit()
+                NotificationCenter.default.post(name: .didFinishOnboarding, object: nil)
             }
-            
         }, for: .touchUpInside)
         
         return button
@@ -87,7 +80,7 @@ class OnboardingViewController2: UIViewController {
         view.addSubview(startButton)
         
         titlelabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(32)
             $0.centerX.equalToSuperview()
         }
         
