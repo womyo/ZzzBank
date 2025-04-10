@@ -15,7 +15,7 @@ class OnboardingViewController1: UIViewController {
         let label = UILabel()
         label.text = "Sleep Goal"
         label.textColor = .label
-        label.font = .systemFont(ofSize: 24, weight: .bold)
+        label.font = .systemFont(ofSize: 28, weight: .semibold)
         return label
     }()
     
@@ -27,14 +27,14 @@ class OnboardingViewController1: UIViewController {
         return imageView
     }()
     
-    private lazy var qLabel: UILabel = {
+    private lazy var contentLabel: UILabel = {
         let label = UILabel()
         label.text = "How long do you usually sleep?"
         
         return label
     }()
     
-    private lazy var textLabel: UILabel = {
+    private lazy var stepperValueLabel: UILabel = {
         let label = UILabel()
         label.text = "\(viewModel.value)h"
         
@@ -54,7 +54,7 @@ class OnboardingViewController1: UIViewController {
     }()
     
     private lazy var stackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [textLabel, uiStepper])
+        let stackView = UIStackView(arrangedSubviews: [stepperValueLabel, uiStepper])
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.spacing = 16
@@ -73,7 +73,7 @@ class OnboardingViewController1: UIViewController {
     
     @objc private func stepperValueChange(_ sender: UIStepper) {
         let sleepValue = Int(sender.value)
-        textLabel.text = "\(sleepValue)h"
+        stepperValueLabel.text = "\(sleepValue)h"
     }
     
     override func viewDidLoad() {
@@ -86,11 +86,11 @@ class OnboardingViewController1: UIViewController {
         view.backgroundColor = .customBackgroundColor
         view.addSubview(titlelabel)
         view.addSubview(imageView)
-        view.addSubview(qLabel)
+        view.addSubview(contentLabel)
         view.addSubview(stackView)
         
         titlelabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
             $0.centerX.equalToSuperview()
         }
         
@@ -99,13 +99,13 @@ class OnboardingViewController1: UIViewController {
             $0.centerY.equalToSuperview()
         }
         
-        qLabel.snp.makeConstraints {
+        contentLabel.snp.makeConstraints {
             $0.top.equalTo(imageView.snp.bottom).offset(16)
             $0.centerX.equalToSuperview()
         }
         
         stackView.snp.makeConstraints {
-            $0.top.equalTo(qLabel.snp.bottom).offset(16)
+            $0.top.equalTo(contentLabel.snp.bottom).offset(16)
             $0.centerX.equalToSuperview()
         }
     }

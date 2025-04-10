@@ -87,7 +87,7 @@ class OnboardingViewController2: UIViewController {
         view.addSubview(startButton)
         
         titlelabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
             $0.centerX.equalToSuperview()
         }
         
