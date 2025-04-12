@@ -17,7 +17,7 @@ class NotificationManager {
     func scheduleNotification(id: String, endDate: Date) {
         let content = UNMutableNotificationContent()
         content.title = "ZzzBank"
-        content.body = "대출 마감 당일입니다!"
+        content.body = "Your loan is due today!"
         content.sound = .default
         
         content.userInfo = ["body": content.body]
@@ -27,6 +27,26 @@ class NotificationManager {
         
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
         let request = UNNotificationRequest(identifier: "Notification-\(id)", content: content, trigger: trigger)
+        
+        center.add(request) { error in
+            if let error = error {
+                print("Error in scheduling notification \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func scheduleDailyNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "ZzzBank"
+        content.body = "Sleep data is updated. Check now."
+        content.sound = .default
+        
+        var dateComponents = DateComponents()
+        dateComponents.hour = 12
+        dateComponents.minute = 0
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+        let request = UNNotificationRequest(identifier: "DailyNotification", content: content, trigger: trigger)
         
         center.add(request) { error in
             if let error = error {

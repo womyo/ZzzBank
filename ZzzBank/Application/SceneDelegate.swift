@@ -9,7 +9,8 @@ import UIKit
 import BackgroundTasks
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
+    
+    private let viewModel = LoanViewModel()
     var window: UIWindow?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -21,14 +22,37 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
         
-        if UserDefaults.standard.value(forKey: "didFinishOnboarding") == nil {
-            let viewController = OnboardingPageViewController()
-            window?.rootViewController = viewController
-        } else {
-            window?.rootViewController = UINavigationController(rootViewController: TabBarController())
-        }
+        showLaunchScreen()
         
+        if UserDefaults.standard.value(forKey: "didFinishOnboarding") == nil {
+            showOnboardingScreen()
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.showMainScreen()
+            }
+        }
+    }
+    
+    private func showOnboardingScreen() {
+        let onboardingVC = OnboardingPageViewController()
+        window?.rootViewController = onboardingVC
         window?.makeKeyAndVisible()
+    }
+    
+    private func showLaunchScreen() {
+        // Launch Screen을 불러와서 표시
+        let launchStoryboard = UIStoryboard(name: "LaunchScreen", bundle: nil)
+        let launchScreenVC = launchStoryboard.instantiateInitialViewController()
+        window?.rootViewController = launchScreenVC
+        window?.makeKeyAndVisible()
+    }
+    
+    private func showMainScreen() {
+        // 메인 화면으로 전환
+        DispatchQueue.main.async {
+            self.window?.rootViewController = UINavigationController(rootViewController: TabBarController())
+            self.window?.makeKeyAndVisible()
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -83,6 +107,10 @@ extension SceneDelegate: UNUserNotificationCenterDelegate {
     func requestNotificationAuthorization() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             if granted {
+                DispatchQueue.main.async {
+                    NotificationManager.shared.scheduleDailyNotification()
+                }
+                
                 UserDefaults.standard.set(true, forKey: "isAlert")
                 print("Notification authorization granted.")
             } else {
@@ -98,6 +126,24 @@ extension SceneDelegate: UNUserNotificationCenterDelegate {
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        if response.notification.request.identifier == "DailyNotification" {
+            HealthKitManager.shared.getSleepData() { result in
+                DispatchQueue.main.async {
+                    let amount = result - UserDefaults.standard.integer(forKey: "personSleep")
+                    if amount > 0 {
+                        self.viewModel.payLoad(amount: amount)
+                    }
+                    
+                    self.viewModel.getLoanRecords().enumerated().forEach { index, loanRecord in
+                        if Date() > loanRecord.repaymentDate {
+                            let overdueDays = Calendar.current.dateComponents([.day], from: loanRecord.repaymentDate, to: Date()).day ?? 0
+                            self.viewModel.updateLoanRecords(index: index, overdueDays: overdueDays)
+                        }
+                    }
+                }
+            }
+        }
+        
         completionHandler()
     }
 }
