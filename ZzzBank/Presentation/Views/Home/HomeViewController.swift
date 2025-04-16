@@ -195,9 +195,9 @@ class HomeViewController: UIViewController {
             
             if splitCurrentProjectVersion.count > 0 && splitLatestVersion.count > 0 {
                 if splitCurrentProjectVersion[0] < splitLatestVersion[0] {
-                    self.showUpdateAlert(version: latestVersion)
+                    self.showUpdateAlert()
                 } else if splitCurrentProjectVersion[1] < splitLatestVersion[1] {
-                    self.showUpdateAlert(version: latestVersion)
+                    self.showUpdateAlert()
                 } else {
                     print("Latest Version")
                 }
@@ -205,7 +205,7 @@ class HomeViewController: UIViewController {
         }
     }
     
-    func showUpdateAlert(version: String) {
+    func showUpdateAlert() {
         let alertController = UIAlertController(title: "Update Available", message: "Please update ZzzBank", preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "Update", style: .default) { _ in
             AppUpdateCheckManager.shared.openAppStore()
