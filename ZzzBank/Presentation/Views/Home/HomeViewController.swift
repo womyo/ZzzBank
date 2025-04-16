@@ -91,6 +91,8 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .customBackgroundColor
+        
+        checkAndUpdateIfNeeded()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -182,6 +184,35 @@ class HomeViewController: UIViewController {
     @objc private func navigateToLoanRecordView() {
         let vc = LoanRecordViewController(viewModel: self.viewModel)
         self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func checkAndUpdateIfNeeded() {
+        Task {
+            guard let currentProjectVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String, let latestVersion = await AppUpdateCheckManager.shared.latestVersion() else { return }
+            
+            let splitLatestVersion = latestVersion.split(separator: ".").compactMap { Int($0) }
+            let splitCurrentProjectVersion = currentProjectVersion.split(separator: ".").compactMap { Int($0) }
+            
+            if splitCurrentProjectVersion.count > 0 && splitLatestVersion.count > 0 {
+                if splitCurrentProjectVersion[0] < splitLatestVersion[0] {
+                    self.showUpdateAlert(version: latestVersion)
+                } else if splitCurrentProjectVersion[1] < splitLatestVersion[1] {
+                    self.showUpdateAlert(version: latestVersion)
+                } else {
+                    print("Latest Version")
+                }
+            }
+        }
+    }
+    
+    func showUpdateAlert(version: String) {
+        let alertController = UIAlertController(title: "Update Available", message: "Please update ZzzBank", preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "Update", style: .default) { _ in
+            AppUpdateCheckManager.shared.openAppStore()
+        })
+        alertController.addAction(UIAlertAction(title: "Later", style: .cancel))
+        
+        present(alertController, animated: true, completion: nil)
     }
 }
 
