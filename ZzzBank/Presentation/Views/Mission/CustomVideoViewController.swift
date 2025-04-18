@@ -11,8 +11,8 @@ import AVKit
 
 extension AVPlayer{ // 영상이 현재 진행중인지 판단하는 부분
     var isPlaying: Bool {
-           return rate != 0 && error == nil
-       }
+        return rate != 0 && error == nil
+    }
 }
 
 class CustomVideoViewController: UIViewController {
@@ -21,6 +21,7 @@ class CustomVideoViewController: UIViewController {
     private var playerLayer: AVPlayerLayer?
     private var timer: Timer?
     var timeObserver : Any?
+    private var isSeeking: Bool = false
     
     private var totalDuration: Double?
     
@@ -90,6 +91,9 @@ class CustomVideoViewController: UIViewController {
             self?.timelineValueChanged()
         }, for: .touchUpInside)
         
+        slider.addAction(UIAction { [weak self] _ in
+            self?.isSeeking = true
+        }, for: .touchDown)
         return slider
     }()
     
@@ -242,12 +246,10 @@ extension CustomVideoViewController {
     }
     
     func updateTimelineSlider() {
-        guard let player = player, let duration = totalDuration, duration > 0 else { return }
+        guard !isSeeking, let player = player, let duration = totalDuration, duration > 0 else { return }
         
         let currentTime = player.currentTime().seconds
-        
         slider.value = Float(currentTime / duration)
-        
         timeLabel.text = formatTime(currentTime) + " / " + formatTime(duration)
     }
     
@@ -263,13 +265,19 @@ extension CustomVideoViewController {
     
     // MARK: - 타임라인 슬라이더 조절
     private func timelineValueChanged() {
+        let playStatus = player?.isPlaying
         player?.pause()
         
         guard let duration = player?.currentItem?.duration else { return }
         let value = Float64(slider.value) * CMTimeGetSeconds(duration)
         let seekTime = CMTime(value: CMTimeValue(value), timescale: 1)
-        player?.seek(to: seekTime) { _ in
-            self.player?.play()
+        
+        isSeeking = true
+        player?.seek(to: seekTime) { [weak self] _ in
+            if playStatus ?? false {
+                self?.isSeeking = false
+                self?.player?.play()
+            }
         }
     }
     
@@ -281,9 +289,9 @@ extension CustomVideoViewController {
         guard let currentTime = player?.currentItem?.currentTime() else { return }
         let currentTimeInSecondMove = CMTimeGetSeconds(currentTime).advanced(by: goValue)
         let seekTime = CMTime(value: CMTimeValue(currentTimeInSecondMove), timescale: 1)
-        player?.seek(to: seekTime) { _ in
+        player?.seek(to: seekTime) { [weak self] _ in
             if playStatus ?? false {
-                self.player?.play()
+                self?.player?.play()
             }
         }
     }
