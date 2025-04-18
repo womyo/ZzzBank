@@ -25,11 +25,7 @@ class CustomVideoViewController: UIViewController {
     
     private var totalDuration: Double?
     
-    private let totalBtnsView: UIView = {
-        let view = UIView()
-        
-        return view
-    }()
+    private let totalBtnsView = UIView()
 
     private let videoBackView: UIView = {
         let view = UIView()
@@ -38,7 +34,7 @@ class CustomVideoViewController: UIViewController {
         return view
     }()
     
-    private lazy var xButton: UIButton = {
+    private lazy var closeButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "xmark"), for: .normal)
         button.addAction(UIAction { [weak self] _ in
@@ -102,6 +98,8 @@ class CustomVideoViewController: UIViewController {
         
         hideUIControls()
         configureUI()
+        
+        viewModel.loadSubTitles()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -140,7 +138,7 @@ class CustomVideoViewController: UIViewController {
         view.addSubview(totalBtnsView)
         view.addSubview(videoBackView)
         view.sendSubviewToBack(videoBackView)
-        totalBtnsView.addSubview(xButton)
+        totalBtnsView.addSubview(closeButton)
         totalBtnsView.addSubview(playButton)
         totalBtnsView.addSubview(backwardButton)
         totalBtnsView.addSubview(forwardButton)
@@ -155,7 +153,7 @@ class CustomVideoViewController: UIViewController {
             $0.edges.equalToSuperview()
         }
         
-        xButton.snp.makeConstraints {
+        closeButton.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             $0.trailing.equalToSuperview().offset(-16)
         }
@@ -198,9 +196,12 @@ class CustomVideoViewController: UIViewController {
         
         let interval = CMTime(seconds: 0.01, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
         timeObserver = player?.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main, using: { elapsedTime in
-            Task {
-                await self.getVideoTotalTime()
-            }
+            let subtitles = self.viewModel.loadSubTitles()
+            
+            self.timeLabel.text = self.viewModel.subTitle(for: CMTimeGetSeconds(elapsedTime), in: subtitles)
+//            Task {
+//                await self.getVideoTotalTime()
+//            }
         })
     }
 }
