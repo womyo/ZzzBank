@@ -6,51 +6,37 @@
 //
 
 import UIKit
+import Then
 
 class MissionCollectionViewCell: UICollectionViewCell {
     static let identifier = "MissionCollectionViewCell"
     
-    private let label: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 12, weight: .semibold)
-        label.numberOfLines = 2
-        label.lineBreakMode = .byWordWrapping
-        label.textAlignment = .center
-        
-        return label
-    }()
+    private let label = UILabel().then {
+        $0.font = .systemFont(ofSize: 12, weight: .semibold)
+        $0.numberOfLines = 2
+        $0.lineBreakMode = .byWordWrapping
+        $0.textAlignment = .center
+    }
     
-    private let horizontalLineView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .black
-        view.isHidden = true
-        
-        return view
-    }()
+    private let horizontalLineView = UIView().then {
+        $0.backgroundColor = .black
+        $0.isHidden = true
+    }
     
-    private let verticalLineView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .black
-        view.isHidden = true
-        
-        return view
-    }()
+    private let verticalLineView = UIView().then {
+        $0.backgroundColor = .black
+        $0.isHidden = true
+    }
     
-    private let diagonalLineView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .black
-        view.isHidden = true
-        
-        return view
-    }()
+    private let diagonalLineView = UIView().then {
+        $0.backgroundColor = .black
+        $0.isHidden = true
+    }
     
-    private let reverseDiagonalLineView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .black
-        view.isHidden = true
-        
-        return view
-    }()
+    private let reverseDiagonalLineView = UIView().then {
+        $0.backgroundColor = .black
+        $0.isHidden = true
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -62,12 +48,8 @@ class MissionCollectionViewCell: UICollectionViewCell {
     }
     
     private func configureUI() {
-        contentView.addSubview(label)
-        contentView.addSubview(horizontalLineView)
-        contentView.addSubview(verticalLineView)
-        contentView.addSubview(diagonalLineView)
-        contentView.addSubview(reverseDiagonalLineView)
-        
+        contentView.addSubviews(label, horizontalLineView, verticalLineView, diagonalLineView, reverseDiagonalLineView)
+
         label.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(8)
         }

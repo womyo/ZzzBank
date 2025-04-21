@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Then
 
 class RecordSettingViewController: UIViewController {
     private let viewModel: LoanViewModel
@@ -20,33 +21,25 @@ class RecordSettingViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let settingLabel: UILabel = {
-        let label = UILabel()
-        label.text = "View Options"
-        label.font = .systemFont(ofSize: 20, weight: .bold)
-        return label
-    }()
+    private let settingLabel = UILabel().then {
+        $0.text = "View Options"
+        $0.font = .systemFont(ofSize: 20, weight: .bold)
+    }
     
-    private let termLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Range"
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
-        return label
-    }()
+    private let termLabel = UILabel().then {
+        $0.text = "Range"
+        $0.font = .systemFont(ofSize: 16, weight: .semibold)
+    }
     
-    private let typeLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Type"
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
-        return label
-    }()
+    private let typeLabel = UILabel().then {
+        $0.text = "Type"
+        $0.font = .systemFont(ofSize: 16, weight: .semibold)
+    }
     
-    private let sortLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Sort"
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
-        return label
-    }()
+    private let sortLabel = UILabel().then {
+        $0.text = "Sort"
+        $0.font = .systemFont(ofSize: 16, weight: .semibold)
+    }
     
     private lazy var checkButton: UIButton = {
         let button = UIButton()
@@ -63,7 +56,7 @@ class RecordSettingViewController: UIViewController {
         return button
     }()
     
-    private lazy var collectionView1: UICollectionView = {
+    private lazy var termCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
 
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -75,7 +68,7 @@ class RecordSettingViewController: UIViewController {
         return collectionView
     }()
     
-    private lazy var collectionView2: UICollectionView = {
+    private lazy var typeCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
 
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -87,7 +80,7 @@ class RecordSettingViewController: UIViewController {
         return collectionView
     }()
     
-    private lazy var collectionView3: UICollectionView = {
+    private lazy var sortCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
 
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -107,14 +100,7 @@ class RecordSettingViewController: UIViewController {
     }
     
     func configureUI() {
-        view.addSubview(settingLabel)
-        view.addSubview(termLabel)
-        view.addSubview(collectionView1)
-        view.addSubview(typeLabel)
-        view.addSubview(collectionView2)
-        view.addSubview(sortLabel)
-        view.addSubview(collectionView3)
-        view.addSubview(checkButton)
+        view.addSubviews(settingLabel, termLabel, termCollectionView, typeLabel, typeCollectionView, sortLabel, sortCollectionView, checkButton)
         
         settingLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(16)
@@ -126,29 +112,29 @@ class RecordSettingViewController: UIViewController {
             $0.leading.equalTo(settingLabel)
         }
         
-        collectionView1.snp.makeConstraints {
+        termCollectionView.snp.makeConstraints {
             $0.top.equalTo(termLabel.snp.bottom).offset(16)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(45)
         }
         
         typeLabel.snp.makeConstraints {
-            $0.top.equalTo(collectionView1.snp.bottom).offset(24)
+            $0.top.equalTo(termCollectionView.snp.bottom).offset(24)
             $0.leading.equalTo(settingLabel)
         }
         
-        collectionView2.snp.makeConstraints {
+        typeCollectionView.snp.makeConstraints {
             $0.top.equalTo(typeLabel.snp.bottom).offset(16)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(45)
         }
         
         sortLabel.snp.makeConstraints {
-            $0.top.equalTo(collectionView2.snp.bottom).offset(24)
+            $0.top.equalTo(typeCollectionView.snp.bottom).offset(24)
             $0.leading.equalTo(settingLabel)
         }
         
-        collectionView3.snp.makeConstraints {
+        sortCollectionView.snp.makeConstraints {
             $0.top.equalTo(sortLabel.snp.bottom).offset(16)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(45)
@@ -157,7 +143,7 @@ class RecordSettingViewController: UIViewController {
         checkButton.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().offset(-16)
-            $0.top.equalTo(collectionView3.snp.bottom).offset(16)
+            $0.top.equalTo(sortCollectionView.snp.bottom).offset(16)
             $0.bottom.equalToSuperview().offset(-32)
             $0.height.equalTo(50)
         }

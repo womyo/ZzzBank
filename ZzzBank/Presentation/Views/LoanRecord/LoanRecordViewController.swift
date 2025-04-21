@@ -8,18 +8,16 @@
 import UIKit
 import SnapKit
 import Combine
+import Then
 
 class LoanRecordViewController: UIViewController {
     private let viewModel: LoanViewModel
     private var cancellables = Set<AnyCancellable>()
     
-    private let dateSectionLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .medium)
-        label.textColor = .gray
-        
-        return label
-    }()
+    private let dateSectionLabel = UILabel().then {
+        $0.font = .systemFont(ofSize: 14, weight: .medium)
+        $0.textColor = .gray
+    }
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -112,9 +110,7 @@ class LoanRecordViewController: UIViewController {
     
     private func configureUI() {
         view.backgroundColor = .customBackgroundColor
-        view.addSubview(dateSectionLabel)
-        view.addSubview(tableView)
-        view.addSubview(settingButton)
+        view.addSubviews(dateSectionLabel, tableView, settingButton)
         
         settingButton.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)

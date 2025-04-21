@@ -10,27 +10,22 @@ import SpriteKit
 import SwiftUI
 import SnapKit
 import Combine
+import Then
 
 class HomeViewController: UIViewController {
     private let viewModel: LoanViewModel
     private var cancellables = Set<AnyCancellable>()
     
-    private let infoLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .systemGray
-        label.font = .systemFont(ofSize: 16, weight: .regular)
-        
-        return label
-    }()
+    private let infoLabel = UILabel().then {
+        $0.textColor = .systemGray
+        $0.font = .systemFont(ofSize: 16, weight: .regular)
+    }
     
-    private let mentLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .systemGray
-        label.font = .systemFont(ofSize: 16, weight: .regular)
-        label.numberOfLines = 0
-        
-        return label
-    }()
+    private let mentLabel = UILabel().then {
+        $0.textColor = .systemGray
+        $0.font = .systemFont(ofSize: 16, weight: .regular)
+        $0.numberOfLines = 0
+    }
     
     private let containerView = UIView()
     
@@ -52,14 +47,11 @@ class HomeViewController: UIViewController {
     
     private let tableViewHeaderView = UIView()
     
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Sleep History"
-        label.textColor = .white
-        label.font = .systemFont(ofSize: 24, weight: .semibold)
-
-        return label
-    }()
+    private let titleLabel = UILabel().then {
+        $0.text = "Sleep History"
+        $0.textColor = .white
+        $0.font = .systemFont(ofSize: 24, weight: .semibold)
+    }
     
     private lazy var loanButton: UIButton = {
         let button = UIButton()

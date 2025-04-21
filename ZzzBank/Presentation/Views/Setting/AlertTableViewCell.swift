@@ -6,31 +6,26 @@
 //
 
 import UIKit
+import Then
 
 class AlertTableViewCell: UITableViewCell {
     static let identifier = "AlertTableViewCell"
     
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Alert"
-        
-        return label
-    }()
+    private let titleLabel = UILabel().then {
+        $0.text = "Alert"
+    }
     
-    private let toggleSwitch: UISwitch = {
-        let toggleSwitch = UISwitch()
-        toggleSwitch.onTintColor = .mainColor
+    private let toggleSwitch = UISwitch().then { toggle in
+        toggle.onTintColor = .mainColor
         
-        toggleSwitch.isOn = UserDefaults.standard.bool(forKey: "isAlert")
-        toggleSwitch.addAction(UIAction { _ in
+        toggle.isOn = UserDefaults.standard.bool(forKey: "isAlert")
+        toggle.addAction(UIAction { _ in
             if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
-            UserDefaults.standard.set(toggleSwitch.isOn, forKey: "isAlert")
+            UserDefaults.standard.set(toggle.isOn, forKey: "isAlert")
         }, for: .valueChanged)
-        
-        return toggleSwitch
-    }()
+    }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -45,8 +40,7 @@ class AlertTableViewCell: UITableViewCell {
         selectionStyle = .none
         backgroundColor = .customBackgroundColor
         
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(toggleSwitch)
+        contentView.addSubviews(titleLabel, toggleSwitch)
         
         titleLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)

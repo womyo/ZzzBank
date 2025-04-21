@@ -8,12 +8,7 @@
 import UIKit
 import AVFoundation
 import AVKit
-
-extension AVPlayer{ // 영상이 현재 진행중인지 판단하는 부분
-    var isPlaying: Bool {
-        return rate != 0 && error == nil
-    }
-}
+import Then
 
 class CustomVideoViewController: UIViewController {
     private let viewModel = CustomVideoViewModel()
@@ -23,17 +18,13 @@ class CustomVideoViewController: UIViewController {
     var timeObserver : Any?
     private var isSeeking: Bool = false
     private var speedMode = 1
-    
     private var totalDuration: Double?
     
     private let totalBtnsView = UIView()
 
-    private let videoBackView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        
-        return view
-    }()
+    private let videoBackView = UIView().then {
+        $0.backgroundColor = .clear
+    }
     
     private lazy var closeButton: UIButton = {
         let button = UIButton()
@@ -74,24 +65,18 @@ class CustomVideoViewController: UIViewController {
         return button
     }()
     
-    private let timeLabel: UILabel = {
-        let label = UILabel()
-        label.text = "00:00 / 00:00"
-        
-        return label
-    }()
+    private let timeLabel = UILabel().then {
+        $0.text = "00:00 / 00:00"
+    }
     
-    private let subtitleLabel: PaddingLabel = {
-        let label = PaddingLabel()
-        label.backgroundColor = UIColor.black.withAlphaComponent(0.4)
-        label.layer.cornerRadius = 4
-        label.layer.masksToBounds = true
-        label.numberOfLines = 0
-        label.textAlignment = .center
-        label.lineBreakMode = .byWordWrapping
-        
-        return label
-    }()
+    private let subtitleLabel = PaddingLabel().then {
+        $0.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        $0.layer.cornerRadius = 4
+        $0.layer.masksToBounds = true
+        $0.numberOfLines = 0
+        $0.textAlignment = .center
+        $0.lineBreakMode = .byWordWrapping
+    }
     
     private lazy var speedButton: UIButton = {
         let button = UIButton()
@@ -164,17 +149,10 @@ class CustomVideoViewController: UIViewController {
     
     private func configureUI() {
         view.backgroundColor = .customBackgroundColor
-        view.addSubview(subtitleLabel)
-        view.addSubview(totalBtnsView)
-        view.addSubview(videoBackView)
+        
+        view.addSubviews(subtitleLabel, totalBtnsView, videoBackView)
         view.sendSubviewToBack(videoBackView)
-        totalBtnsView.addSubview(closeButton)
-        totalBtnsView.addSubview(playButton)
-        totalBtnsView.addSubview(backwardButton)
-        totalBtnsView.addSubview(forwardButton)
-        totalBtnsView.addSubview(timeLabel)
-        totalBtnsView.addSubview(speedButton)
-        totalBtnsView.addSubview(slider)
+        totalBtnsView.addSubviews(closeButton, playButton, backwardButton, forwardButton, timeLabel, speedButton, slider)
         
         totalBtnsView.snp.makeConstraints {
             $0.edges.equalToSuperview()

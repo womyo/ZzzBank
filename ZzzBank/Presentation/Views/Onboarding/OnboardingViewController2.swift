@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Then
 
 extension Notification.Name {
     static let didFinishOnboarding = Notification.Name("didFinishOnboarding")
@@ -14,28 +15,20 @@ extension Notification.Name {
 class OnboardingViewController2: UIViewController {
     private let viewModel: OnboardingViewModel
     
-    private let titlelabel: UILabel = {
-        let label = UILabel()
-        label.text = "With Apple Watch"
-        label.textColor = .label
-        label.font = .systemFont(ofSize: 28, weight: .semibold)
-        return label
-    }()
+    private let titleLabel = UILabel().then {
+        $0.text = "With Apple Watch"
+        $0.textColor = .label
+        $0.font = .systemFont(ofSize: 28, weight: .semibold)
+    }
     
-    private let imageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "watch"))
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        
-        return imageView
-    }()
+    private let imageView = UIImageView(image: UIImage(named: "watch")).then {
+        $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
+    }
     
-    private lazy var contentLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Apple Watch for smart sleep"
-        
-        return label
-    }()
+    private let contentLabel = UILabel().then {
+        $0.text = "Apple Watch for smart sleep"
+    }
     
     private lazy var startButton: UIButton = {
         let button = UIButton()
@@ -74,12 +67,9 @@ class OnboardingViewController2: UIViewController {
     
     private func configureUI() {
         view.backgroundColor = .customBackgroundColor
-        view.addSubview(titlelabel)
-        view.addSubview(imageView)
-        view.addSubview(contentLabel)
-        view.addSubview(startButton)
+        view.addSubviews(titleLabel, imageView, contentLabel, startButton)
         
-        titlelabel.snp.makeConstraints {
+        titleLabel.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(32)
             $0.centerX.equalToSuperview()
         }

@@ -6,16 +6,14 @@
 //
 
 import UIKit
+import Then
 
 class ManualRepaymentTableViewCell: UITableViewCell {
     static let identifier = "ManualRepaymentTableViewCell"
     
-    private let repaymentLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Sleep Repay (Manual)"
-        
-        return label
-    }()
+    private let repaymentLabel = UILabel().then {
+        $0.text = "Sleep Repay (Manual)"
+    }
     
     var onButtonTapped: ((Int) -> Void)?
     

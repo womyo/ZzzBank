@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Then
 
 class LoanRecordTableViewCell: UITableViewCell {
     static let identifier = "LoanRecordTableView"
@@ -29,19 +30,14 @@ class LoanRecordTableViewCell: UITableViewCell {
         return stackView
     }()
     
-    private let dateLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .medium)
-        label.textColor = .gray
-        return label
-    }()
+    private let dateLabel = UILabel().then {
+        $0.font = .systemFont(ofSize: 14, weight: .medium)
+        $0.textColor = .gray
+    }
     
-    private let flagLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .medium)
-
-        return label
-    }()
+    private let flagLabel = UILabel().then {
+        $0.font = .systemFont(ofSize: 14, weight: .medium)
+    }
     
     private let infoLabel = UILabel()
     private let loanStatusLabel = UILabel()
@@ -64,8 +60,7 @@ class LoanRecordTableViewCell: UITableViewCell {
     }
     
     private func configureUI() {
-        contentView.addSubview(stackView)
-        contentView.addSubview(infoStackView)
+        contentView.addSubviews(stackView, infoStackView)
         
         stackView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)

@@ -6,33 +6,26 @@
 //
 
 import UIKit
+import Then
 
 class OnboardingViewController1: UIViewController {
     private let viewModel: OnboardingViewModel
     let pickerData = ["5", "6", "7" ,"8", "9", "10", "11", "12", "13", "14"]
     
-    private let titlelabel: UILabel = {
-        let label = UILabel()
-        label.text = "Sleep Goal"
-        label.textColor = .label
-        label.font = .systemFont(ofSize: 28, weight: .semibold)
-        return label
-    }()
+    private let titleLabel = UILabel().then {
+        $0.text = "Sleep Goal"
+        $0.textColor = .label
+        $0.font = .systemFont(ofSize: 28, weight: .semibold)
+    }
     
-    private let imageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "manSleep"))
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        
-        return imageView
-    }()
+    private let imageView = UIImageView(image: UIImage(named: "manSleep")).then {
+        $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
+    }
     
-    private lazy var contentLabel: UILabel = {
-        let label = UILabel()
-        label.text = "How long do you usually sleep?"
-        
-        return label
-    }()
+    private let contentLabel = UILabel().then {
+        $0.text = "How long do you usually sleep?"
+    }
     
     private lazy var stepperValueLabel: UILabel = {
         let label = UILabel()
@@ -84,12 +77,9 @@ class OnboardingViewController1: UIViewController {
 
     private func configureUI() {
         view.backgroundColor = .customBackgroundColor
-        view.addSubview(titlelabel)
-        view.addSubview(imageView)
-        view.addSubview(contentLabel)
-        view.addSubview(stackView)
+        view.addSubviews(titleLabel, imageView, contentLabel, stackView)
         
-        titlelabel.snp.makeConstraints {
+        titleLabel.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(32)
             $0.centerX.equalToSuperview()
         }

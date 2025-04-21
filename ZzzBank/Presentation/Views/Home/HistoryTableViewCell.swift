@@ -6,39 +6,26 @@
 //
 
 import UIKit
+import Then
 
 class HistoryTableViewCell: UITableViewCell {
     static let identifier = "TableView"
     
-    private let dotView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .white
-        view.layer.cornerRadius = 5
-        view.clipsToBounds = true
-        
-        return view
-    }()
+    private let dotView = UIView().then {
+        $0.backgroundColor = .white
+        $0.layer.cornerRadius = 5
+        $0.clipsToBounds = true
+    }
     
-    private let lineView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 0.3)
-        
-        return view
-    }()
+    private let lineView = UIView().then {
+        $0.backgroundColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 0.3)
+    }
     
-    private let infoLabel: UILabel = {
-        let label = UILabel()
-        
-        return label
-    }()
+    private let infoLabel = UILabel()
     
-    private let dateLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .lightGray
-        label.text = "Feb 15"
-        
-        return label
-    }()
+    private let dateLabel = UILabel().then {
+        $0.textColor = .lightGray
+    }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -50,11 +37,8 @@ class HistoryTableViewCell: UITableViewCell {
     }
     
     private func configureUI() {
-        contentView.addSubview(dotView)
-        contentView.addSubview(lineView)
-        contentView.addSubview(infoLabel)
-        contentView.addSubview(dateLabel)
-        
+        contentView.addSubviews(dotView, lineView, infoLabel, dateLabel)
+
         dotView.snp.makeConstraints {
             $0.width.height.equalTo(10)
             $0.leading.equalToSuperview().offset(32)

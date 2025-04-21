@@ -6,28 +6,23 @@
 //
 
 import UIKit
+import Then
 
 class StepperTableViewCell: UITableViewCell {
     static let identifier = "StepperTableViewCell"
     
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Daily Sleep Goal: \(UserDefaults.standard.integer(forKey: "personSleep"))h"
-        
-        return label
-    }()
+    private let titleLabel = UILabel().then {
+        $0.text = "Daily Sleep Goal: \(UserDefaults.standard.integer(forKey: "personSleep"))h"
+    }
     
-    private let uiStepper: UIStepper = {
-        let stepper = UIStepper()
-        stepper.value = Double(UserDefaults.standard.integer(forKey: "personSleep"))
-        stepper.minimumValue = 4
-        stepper.maximumValue = 10
-        stepper.stepValue = 1
+    private let uiStepper = UIStepper().then {
+        $0.value = Double(UserDefaults.standard.integer(forKey: "personSleep"))
+        $0.minimumValue = 4
+        $0.maximumValue = 10
+        $0.stepValue = 1
         
-        stepper.addTarget(self, action: #selector(stepperValueChange), for: .valueChanged)
-        
-        return stepper
-    }()
+        $0.addTarget(StepperTableViewCell.self, action: #selector(stepperValueChange), for: .valueChanged)
+    }
     
     @objc private func stepperValueChange(_ sender: UIStepper) {
         let sleepValue = Int(sender.value)
@@ -48,9 +43,8 @@ class StepperTableViewCell: UITableViewCell {
         selectionStyle = .none
         backgroundColor = .customBackgroundColor
         
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(uiStepper)
-        
+        contentView.addSubviews(titleLabel, uiStepper)
+
         titleLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)
             $0.centerY.equalToSuperview()
