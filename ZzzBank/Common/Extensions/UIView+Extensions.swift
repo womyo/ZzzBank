@@ -18,4 +18,8 @@ extension UIView {
         backView.layer.shadowRadius = 5
         backView.layer.shadowColor = UIColor.shadowColor.cgColor
     }
+    
+    func addSubviews(_ views : UIView...) {
+        views.forEach { self.addSubview($0) }
+    }
 }
