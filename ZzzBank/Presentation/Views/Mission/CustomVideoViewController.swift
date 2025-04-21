@@ -17,10 +17,12 @@ class CustomVideoViewController: UIViewController {
     private var timer: Timer?
     var timeObserver : Any?
     private var isSeeking: Bool = false
-    private var speedMode = 1
+    private var speedLevel = 1
     private var totalDuration: Double?
     
-    private let totalBtnsView = UIView()
+    private let totalBtnsView = UIView().then {
+        $0.isHidden = true
+    }
 
     private let videoBackView = UIView().then {
         $0.backgroundColor = .clear
@@ -81,7 +83,7 @@ class CustomVideoViewController: UIViewController {
     private lazy var speedButton: UIButton = {
         let button = UIButton()
         button.addAction(UIAction { [weak self] _ in
-            switch self?.speedMode {
+            switch self?.speedLevel {
             case 0:
                 self?.setSpeedLevel(level: 1)
             case 1:
@@ -112,8 +114,14 @@ class CustomVideoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        hideUIControls()
         configureUI()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(saveResumeTime),
+            name: UIApplication.willResignActiveNotification,
+            object: nil
+        )
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -123,6 +131,11 @@ class CustomVideoViewController: UIViewController {
         resetTimer()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(toggleUIControls))
         view.addGestureRecognizer(tapGesture)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        saveResumeTime()
     }
     
     override func viewDidLayoutSubviews() {
@@ -135,16 +148,37 @@ class CustomVideoViewController: UIViewController {
     }
     
     @objc private func hideUIControls() {
-        totalBtnsView.isHidden = true
+        UIView.animate(withDuration: 0.3, animations: {
+            self.totalBtnsView.alpha = 0
+        }) { _ in
+            self.totalBtnsView.isHidden = true
+        }
     }
     
     @objc private func toggleUIControls() {
-        totalBtnsView.isHidden = !totalBtnsView.isHidden
+        let isHidden = totalBtnsView.isHidden
+        
+        if isHidden {
+            totalBtnsView.alpha = 0
+            totalBtnsView.isHidden = false
+        }
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            self.totalBtnsView.alpha = isHidden ? 1 : 0
+        }) { _ in
+            if !isHidden {
+                self.totalBtnsView.isHidden = true
+            }
+        }
+        resetTimer()
     }
     
     private func resetTimer() {
         timer?.invalidate()
-        timer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(hideUIControls), userInfo: nil, repeats: false)
+        
+        if player?.isPlaying ?? false {
+            timer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(hideUIControls), userInfo: nil, repeats: false)
+        }
     }
     
     private func configureUI() {
@@ -168,7 +202,8 @@ class CustomVideoViewController: UIViewController {
         }
         
         playButton.snp.makeConstraints {
-            $0.centerX.centerY.equalToSuperview()
+            $0.center.equalToSuperview()
+            $0.width.equalTo(50)
         }
         
         backwardButton.snp.makeConstraints {
@@ -211,8 +246,14 @@ class CustomVideoViewController: UIViewController {
         playerLayer?.frame = videoBackView.bounds
         playerLayer?.videoGravity = .resizeAspect
         videoBackView.layer.addSublayer(playerLayer!)
+        
+        let resumeTime = UserDefaults.standard.double(forKey: "resumeTime")
+        
+        if resumeTime > 0 {
+            player?.seek(to: CMTime(seconds: resumeTime, preferredTimescale: 1))
+        }
         player?.play()
-        setSpeedLevel(level: speedMode)
+        setSpeedLevel(level: speedLevel)
         
         setPlayButtonImage()
         
@@ -242,10 +283,12 @@ extension CustomVideoViewController {
     // MARK: - Play버튼 클릭
     private func clickPlayAction() {
         if (player?.isPlaying ?? false) {
-            self.player?.pause()
+            player?.pause()
+            timer?.invalidate()
         } else {
-            self.player?.play()
-            self.setSpeedLevel(level: self.speedMode)
+            player?.play()
+            resetTimer()
+            setSpeedLevel(level: self.speedLevel)
         }
         
         setPlayButtonImage()
@@ -304,7 +347,7 @@ extension CustomVideoViewController {
             
             if playStatus ?? false {
                 self.player?.play()
-                self.setSpeedLevel(level: self.speedMode)
+                self.setSpeedLevel(level: self.speedLevel)
             }
             self.isSeeking = false
             self.updateTimelineSlider() // 일시정지 상태에서 슬라이더 움직일 시 시간 업데이트가 안되서 추가
@@ -316,7 +359,7 @@ extension CustomVideoViewController {
         let playStatus = player?.isPlaying
         player?.pause()
         
-        guard let currentTime = player?.currentItem?.currentTime() else { return }
+        guard let currentTime = player?.currentTime() else { return }
         let currentTimeInSecondMove = CMTimeGetSeconds(currentTime).advanced(by: goValue)
         let seekTime = CMTime(value: CMTimeValue(currentTimeInSecondMove), timescale: 1)
         player?.seek(to: seekTime) { [weak self] _ in
@@ -324,30 +367,38 @@ extension CustomVideoViewController {
             
             if playStatus ?? false {
                 self.player?.play()
-                self.setSpeedLevel(level: self.speedMode)
+                self.setSpeedLevel(level: self.speedLevel)
             }
         }
     }
 }
 
+// TODO: - Upgrades
 extension CustomVideoViewController {
     // MARK: - 배속
     func setSpeedLevel(level: Int) {
         switch level {
         case 0:
-            speedMode = 0
+            speedLevel = 0
             speedButton.setTitle("0.5x", for: .normal)
             player?.playImmediately(atRate: 0.5)
         case 1:
-            speedMode = 1
+            speedLevel = 1
             speedButton.setTitle("1x", for: .normal)
             player?.playImmediately(atRate: 1.0)
         case 2:
-            speedMode = 2
+            speedLevel = 2
             speedButton.setTitle("2x", for: .normal)
             player?.playImmediately(atRate: 2.0)
         default:
             break
         }
+    }
+    
+    // MARK: - 이어서 재생
+    @objc func saveResumeTime() {
+        guard let currentTime = player?.currentTime().seconds else { return }
+        
+        UserDefaults.standard.set(currentTime, forKey: "resumeTime")
     }
 }
