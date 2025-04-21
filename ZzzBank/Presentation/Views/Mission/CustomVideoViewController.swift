@@ -22,6 +22,7 @@ class CustomVideoViewController: UIViewController {
     private var timer: Timer?
     var timeObserver : Any?
     private var isSeeking: Bool = false
+    private var speedMode = 1
     
     private var totalDuration: Double?
     
@@ -80,6 +81,36 @@ class CustomVideoViewController: UIViewController {
         return label
     }()
     
+    private let subtitleLabel: PaddingLabel = {
+        let label = PaddingLabel()
+        label.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        label.layer.cornerRadius = 4
+        label.layer.masksToBounds = true
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        label.lineBreakMode = .byWordWrapping
+        
+        return label
+    }()
+    
+    private lazy var speedButton: UIButton = {
+        let button = UIButton()
+        button.addAction(UIAction { [weak self] _ in
+            switch self?.speedMode {
+            case 0:
+                self?.setSpeedLevel(level: 1)
+            case 1:
+                self?.setSpeedLevel(level: 2)
+            case 2:
+                self?.setSpeedLevel(level: 0)
+            default:
+                break
+            }
+        }, for: .touchUpInside)
+        
+        return button
+    }()
+    
     private lazy var slider: UISlider = {
         let slider = UISlider()
         slider.value = 0.0
@@ -98,8 +129,6 @@ class CustomVideoViewController: UIViewController {
         
         hideUIControls()
         configureUI()
-        
-        viewModel.loadSubTitles()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -135,6 +164,7 @@ class CustomVideoViewController: UIViewController {
     
     private func configureUI() {
         view.backgroundColor = .customBackgroundColor
+        view.addSubview(subtitleLabel)
         view.addSubview(totalBtnsView)
         view.addSubview(videoBackView)
         view.sendSubviewToBack(videoBackView)
@@ -143,6 +173,7 @@ class CustomVideoViewController: UIViewController {
         totalBtnsView.addSubview(backwardButton)
         totalBtnsView.addSubview(forwardButton)
         totalBtnsView.addSubview(timeLabel)
+        totalBtnsView.addSubview(speedButton)
         totalBtnsView.addSubview(slider)
         
         totalBtnsView.snp.makeConstraints {
@@ -177,6 +208,17 @@ class CustomVideoViewController: UIViewController {
             $0.bottom.equalTo(slider.snp.top).offset(-10)
         }
         
+        subtitleLabel.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.width.lessThanOrEqualToSuperview().offset(-64)
+            $0.bottom.equalTo(timeLabel)
+        }
+        
+        speedButton.snp.makeConstraints {
+            $0.trailing.equalToSuperview().offset(-16)
+            $0.bottom.equalTo(timeLabel)
+        }
+        
         slider.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().offset(-16)
@@ -189,19 +231,23 @@ class CustomVideoViewController: UIViewController {
         playerLayer = AVPlayerLayer(player: player)
         
         playerLayer?.frame = videoBackView.bounds
+        playerLayer?.videoGravity = .resizeAspect
         videoBackView.layer.addSublayer(playerLayer!)
         player?.play()
+        setSpeedLevel(level: speedMode)
         
         setPlayButtonImage()
         
-        let interval = CMTime(seconds: 0.01, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+        let interval = CMTime(seconds: 0.1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
         timeObserver = player?.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main, using: { elapsedTime in
             let subtitles = self.viewModel.loadSubTitles()
+            let subtitle = self.viewModel.subTitle(for: CMTimeGetSeconds(elapsedTime), in: subtitles)
+            self.subtitleLabel.text = subtitle
+            self.subtitleLabel.isHidden = subtitle == nil
             
-            self.timeLabel.text = self.viewModel.subTitle(for: CMTimeGetSeconds(elapsedTime), in: subtitles)
-//            Task {
-//                await self.getVideoTotalTime()
-//            }
+            Task {
+                await self.getVideoTotalTime()
+            }
         })
     }
 }
@@ -221,6 +267,7 @@ extension CustomVideoViewController {
             self.player?.pause()
         } else {
             self.player?.play()
+            self.setSpeedLevel(level: self.speedMode)
         }
         
         setPlayButtonImage()
@@ -275,10 +322,14 @@ extension CustomVideoViewController {
         
         isSeeking = true
         player?.seek(to: seekTime) { [weak self] _ in
+            guard let self = self else { return }
+            
             if playStatus ?? false {
-                self?.isSeeking = false
-                self?.player?.play()
+                self.player?.play()
+                self.setSpeedLevel(level: self.speedMode)
             }
+            self.isSeeking = false
+            self.updateTimelineSlider() // 일시정지 상태에서 슬라이더 움직일 시 시간 업데이트가 안되서 추가
         }
     }
     
@@ -291,9 +342,34 @@ extension CustomVideoViewController {
         let currentTimeInSecondMove = CMTimeGetSeconds(currentTime).advanced(by: goValue)
         let seekTime = CMTime(value: CMTimeValue(currentTimeInSecondMove), timescale: 1)
         player?.seek(to: seekTime) { [weak self] _ in
+            guard let self = self else { return }
+            
             if playStatus ?? false {
-                self?.player?.play()
+                self.player?.play()
+                self.setSpeedLevel(level: self.speedMode)
             }
+        }
+    }
+}
+
+extension CustomVideoViewController {
+    // MARK: - 배속
+    func setSpeedLevel(level: Int) {
+        switch level {
+        case 0:
+            speedMode = 0
+            speedButton.setTitle("0.5x", for: .normal)
+            player?.playImmediately(atRate: 0.5)
+        case 1:
+            speedMode = 1
+            speedButton.setTitle("1x", for: .normal)
+            player?.playImmediately(atRate: 1.0)
+        case 2:
+            speedMode = 2
+            speedButton.setTitle("2x", for: .normal)
+            player?.playImmediately(atRate: 2.0)
+        default:
+            break
         }
     }
 }
