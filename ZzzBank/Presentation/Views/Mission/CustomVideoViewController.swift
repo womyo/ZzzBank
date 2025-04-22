@@ -116,12 +116,21 @@ class CustomVideoViewController: UIViewController {
         
         configureUI()
         
+        // 앱 닫을시 저장
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(saveResumeTime),
             name: UIApplication.willResignActiveNotification,
             object: nil
         )
+        
+        // 오디오 백그라운드 실행
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print(error.localizedDescription)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -272,7 +281,6 @@ class CustomVideoViewController: UIViewController {
 }
 
 extension CustomVideoViewController {
-    
     // MARK: - 닫기 버튼 클릭
     private func closeViewAction() {
         player?.pause()
@@ -331,7 +339,6 @@ extension CustomVideoViewController {
 
 
 extension CustomVideoViewController {
-    
     // MARK: - 타임라인 슬라이더 조절
     private func timelineValueChanged() {
         let playStatus = player?.isPlaying
