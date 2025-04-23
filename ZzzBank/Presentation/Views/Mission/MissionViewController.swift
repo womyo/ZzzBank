@@ -6,10 +6,19 @@
 //
 
 import UIKit
+import SnapKit
+import Then
+import Lottie
 
 class MissionViewController: UIViewController {
     private let viewModel = MissionViewModel()
     
+    private let animationView = LottieAnimationView(name: "check_animation").then {
+        $0.contentMode = .scaleAspectFit
+        $0.loopMode = .loop
+        $0.play()
+    }
+
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -37,13 +46,24 @@ class MissionViewController: UIViewController {
 //        viewModel.completeMission(title: "Three Days Log")
 //        viewModel.completeMission(title: "No Delay")
 //        viewModel.completeMission(title: "Use a Coupon")
+        
+//        viewModel.completeMission(title: "Early Bird")
+//        viewModel.completeMission(title: "5 Days Streak")
+//        viewModel.completeMission(title: "No Alarm Win")
+        
         viewModel.getMissions()
         viewModel.isBingo()
     }
     
     private func configureUI() {
         view.backgroundColor = .customBackgroundColor
+        view.addSubview(animationView)
         view.addSubview(collectionView)
+        
+        animationView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.centerX.equalToSuperview()
+        }
         
         let spacing: CGFloat = 8
         let numberOfColumns: CGFloat = 5
