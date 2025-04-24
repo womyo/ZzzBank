@@ -8,18 +8,20 @@
 import Foundation
 import RealmSwift
 
-enum LineDirection {
+enum Direction {
     case horizontal, vertical, diagonal, reverseDiagonal
 }
 
 final class MissionViewModel {
     private let realm = RealmManager.shared
-    @Published var missions: [Mission] = []
-    @Published var bingoLineMap: [Int: Set<LineDirection>] = [:]
-    var revealedBingos: Set<[Int]> = []
-    var foundNewBingo = false
     
-    var bingoIndexes = [
+    @Published var missions: [Mission] = []
+    @Published var directionMap: [Int: Set<Direction>] = [:]
+    
+    var revealedLines: Set<[Int]> = []
+    var didFindNewBingo = false
+    
+    var bingoLines: [[Int]] = [
         [0, 1, 2, 3, 4],
         [5, 6, 7, 8, 9],
         [10, 11, 12, 13, 14],
@@ -35,9 +37,9 @@ final class MissionViewModel {
         [0, 6, 12, 18, 24],
         [4, 8, 12, 16, 20]
     ]
-
+    
     func initMissions() {
-        let tempMissions: [Mission] = [
+        let sampleMissions: [Mission] = [
             Mission(title: "First Debt", content: ""),
             Mission(title: "First Repay", content: ""),
             Mission(title: "Three Days Log", content: ""),
@@ -65,78 +67,97 @@ final class MissionViewModel {
             Mission(title: "Perfect Week", content: "")
         ]
         
-        tempMissions.forEach { mission in
+        sampleMissions.forEach { mission in
             realm.write(mission)
         }
     }
     
-    func getMissions() {
+    func loadMissions() {
         missions = Array(realm.read(Mission.self))
     }
     
-    func getMission(_ title: String) -> Results<Mission> {
-        let mission = realm.read(Mission.self).filter("title == %@", "\(title)")
-        
-        return mission
+    func loadMission(title: String) -> Results<Mission> {
+        return realm.read(Mission.self).filter("title == %@", "\(title)")
     }
     
     func completeMission(title: String) {
-        if let mission = getMission(title).first {
-            realm.update(mission) { mission in
-                mission.completed = true
-            }
-        } else {
+        guard let mission = loadMission(title: title).first else {
             print("Cannot find mission")
+            return
+        }
+        
+        realm.update(mission) {
+            $0.completed = true
         }
     }
     
-    func direction(for indexes: [Int]) -> LineDirection? {
-        if indexes.allSatisfy({ $0 / 5 == indexes.first! / 5 }) {
+    func setMissionDirections(_ title: String, _ horizontal: Bool, _ vertical: Bool, _ diagonal: Bool, _ reverseDiagonal: Bool) {
+        guard let mission = loadMission(title: title).first else {
+            print("Cannot find mission")
+            return
+        }
+        
+        realm.update(mission) {
+            $0.horizontal = $0.horizontal || horizontal
+            $0.vertical = $0.vertical || vertical
+            $0.diagonal = $0.diagonal || diagonal
+            $0.reverseDiagonal = $0.reverseDiagonal || reverseDiagonal
+        }
+    }
+    
+    func direction(for line: [Int]) -> Direction? {
+        if line.allSatisfy({ $0 / 5 == line.first! / 5 }) {
             return .horizontal
-        } else if indexes.allSatisfy({ $0 % 5 == indexes.first! % 5 }) {
+        } else if line.allSatisfy({ $0 % 5 == line.first! % 5 }) {
             return .vertical
-        } else if indexes == [0, 6, 12, 18, 24] {
+        } else if line == [0, 6, 12, 18, 24] {
             return .diagonal
-        } else if indexes == [4, 8, 12, 16, 20] {
+        } else if line == [4, 8, 12, 16, 20] {
             return .reverseDiagonal
         } else {
             return nil
         }
     }
     
-    func isBingo(tappedIndex: Int) {
-        foundNewBingo = false
+    func checkBingo(at index: Int) {
+        didFindNewBingo = false
         
-        for bingo in bingoIndexes {
-            if bingo.contains(tappedIndex),
-               bingo.allSatisfy({ missions[$0].completed }),
-               !revealedBingos.contains(bingo),
-               let dir = direction(for: bingo) {
+        for line in bingoLines {
+            if line.contains(index),
+               line.allSatisfy({ missions[$0].completed }),
+               !revealedLines.contains(line),
+               let dir = direction(for: line) {
+
+                if (missions[index].horizontal && dir == .horizontal) ||
+                    (missions[index].vertical && dir == .vertical) ||
+                    (missions[index].diagonal && dir == .diagonal) ||
+                    (missions[index].reverseDiagonal && dir == .reverseDiagonal) {
+                    break
+                }
                 
-                revealedBingos.insert(bingo)
-                foundNewBingo = true
-                for index in bingo {
-                    bingoLineMap[index, default: []].insert(dir)
+                revealedLines.insert(line)
+                didFindNewBingo = true
+                
+                for index in line {
+                    directionMap[index, default: []].insert(dir)
+                    
+                    setMissionDirections(
+                        missions[index].title,
+                        dir == .horizontal,
+                        dir == .vertical,
+                        dir == .diagonal,
+                        dir == .reverseDiagonal
+                    )
                 }
             }
         }
     }
     
-    func mockUpData() {
-        completeMission(title: "First Debt")
-        completeMission(title: "Reset Used")
-        completeMission(title: "Sleep Twice")
-        completeMission(title: "Debt Master")
-        completeMission(title: "Perfect Week")
-        
-        completeMission(title: "First Debt")
-        completeMission(title: "First Repay")
-        completeMission(title: "Three Days Log")
-        completeMission(title: "No Delay")
-        completeMission(title: "Use a Coupon")
-        
-        completeMission(title: "Early Bird")
-        completeMission(title: "5 Days Streak")
-        completeMission(title: "No Alarm Win")
+    func completeMockMissions() {
+        [
+            "First Debt", "Reset Used", "Sleep Twice", "Debt Master", "Perfect Week",
+            "First Repay", "Three Days Log", "No Delay", "Use a Coupon",
+            "Early Bird", "5 Days Streak", "No Alarm Win"
+        ].forEach { completeMission(title: $0) }
     }
 }

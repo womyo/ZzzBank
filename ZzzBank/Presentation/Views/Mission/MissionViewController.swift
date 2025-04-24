@@ -17,8 +17,8 @@ class MissionViewController: UIViewController {
     let bottomSpacer = UIView()
     
     private let titleLabel = UILabel().then {
-        $0.text = "B I N G O !"
-        $0.font = .systemFont(ofSize: 24, weight: .semibold)
+        $0.text = "B  I  N  G  O  !"
+        $0.font = .systemFont(ofSize: 48, weight: .semibold)
     }
     
     private let animationView = LottieAnimationView(name: "check_animation").then {
@@ -51,18 +51,14 @@ class MissionViewController: UIViewController {
         super.viewDidLoad()
 
         configureUI()
-//        viewModel.initMissions()
-//        viewModel.mockUpData()
-        viewModel.getMissions()
+        viewModel.initMissions()
+        viewModel.completeMockMissions()
+        viewModel.loadMissions()
     }
     
     private func configureUI() {
         view.backgroundColor = .customBackgroundColor
-        view.addSubview(topSpacer)
-        view.addSubview(titleLabel)
-        view.addSubview(collectionView)
-        view.addSubview(bottomSpacer)
-        view.addSubview(animationView)
+        view.addSubviews(titleLabel, collectionView, bottomSpacer, animationView)
         
         let spacing: CGFloat = 8
         let numberOfColumns: CGFloat = 5
@@ -71,15 +67,9 @@ class MissionViewController: UIViewController {
         let itemWidth = (UIScreen.main.bounds.width - totalSpacing) / numberOfColumns
         let totalHeight = itemWidth * numberOfColumns + spacing * (numberOfColumns - 1)
         
-        
-        topSpacer.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            $0.bottom.equalTo(collectionView.snp.top)
-        }
-        
         titleLabel.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.centerY.equalTo(topSpacer.snp.centerY)
+            $0.bottom.equalTo(collectionView.snp.top).offset(-10)
         }
         
         collectionView.snp.makeConstraints {
@@ -114,8 +104,10 @@ extension MissionViewController: UICollectionViewDataSource, UICollectionViewDel
         cell.layer.backgroundColor = viewModel.missions[indexPath.item].completed ? UIColor.main.cgColor : UIColor.systemGray.cgColor
         cell.configure(with: viewModel.missions[indexPath.item].title)
         
-        let directions = viewModel.bingoLineMap[indexPath.item] ?? []
-        cell.setLines(horizontal: directions.contains(.horizontal), vertical: directions.contains(.vertical), diagonal: directions.contains(.diagonal), reverseDiagonal: directions.contains(.reverseDiagonal))
+        cell.setLines(horizontal: viewModel.missions[indexPath.item].horizontal,
+                      vertical: viewModel.missions[indexPath.item].vertical,
+                      diagonal: viewModel.missions[indexPath.item].diagonal,
+                      reverseDiagonal: viewModel.missions[indexPath.item].reverseDiagonal)
         
         return cell
     }
@@ -131,9 +123,9 @@ extension MissionViewController: UICollectionViewDataSource, UICollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        viewModel.isBingo(tappedIndex: indexPath.item)
-        
-        if viewModel.foundNewBingo {
+        viewModel.checkBingo(at: indexPath.item)
+
+        if viewModel.didFindNewBingo {
             self.animationView.alpha = 1
             self.animationView.isHidden = false
             self.animationView.play()
