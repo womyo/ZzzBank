@@ -19,7 +19,7 @@ class SettingViewController: UIViewController {
         tableView.backgroundColor = . customBackgroundColor
         
         tableView.register(AlertTableViewCell.self, forCellReuseIdentifier: AlertTableViewCell.identifier)
-        tableView.register(ManualRepaymentTableViewCell.self, forCellReuseIdentifier: ManualRepaymentTableViewCell.identifier)
+        tableView.register(LabelTableViewCell.self, forCellReuseIdentifier: LabelTableViewCell.identifier)
         tableView.register(StepperTableViewCell.self, forCellReuseIdentifier: StepperTableViewCell.identifier)
         
         return tableView
@@ -52,7 +52,7 @@ class SettingViewController: UIViewController {
 
 extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
-        2
+        3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -61,6 +61,8 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
             return 1
         case 1:
             return 2
+        case 2:
+            return 1
         default:
             return 0
         }
@@ -77,9 +79,11 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
         case 1:
             switch indexPath.row {
             case 0:
-                guard let cell = tableView.dequeueReusableCell(withIdentifier: ManualRepaymentTableViewCell.identifier, for: indexPath) as? ManualRepaymentTableViewCell else {
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: LabelTableViewCell.identifier, for: indexPath) as? LabelTableViewCell else {
                     return UITableViewCell()
                 }
+                
+                cell.configure(with: "Sleep Repay (Manual)")
             
                 return cell
             case 1:
@@ -91,6 +95,14 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
             default:
                 return UITableViewCell()
             }
+        case 2:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: LabelTableViewCell.identifier, for: indexPath) as? LabelTableViewCell else {
+                return UITableViewCell()
+            }
+            
+            cell.configure(with: "Bingo!")
+            
+            return cell
         default:
             return UITableViewCell()
         }
@@ -110,6 +122,10 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
             }
             
             present(vc, animated: true)
+        } else if indexPath.section == 2 && indexPath.row == 0 {
+            let vc = MissionViewController(viewModel: MissionViewModel())
+            
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
     
@@ -119,6 +135,8 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
             return "ALERT SETTINGS"
         case 1:
             return "SLEEP SETTINGS"
+        case 2:
+            return "EVENTS"
         default:
             return nil
         }

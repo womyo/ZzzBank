@@ -8,12 +8,10 @@
 import UIKit
 import Then
 
-class ManualRepaymentTableViewCell: UITableViewCell {
-    static let identifier = "ManualRepaymentTableViewCell"
+class LabelTableViewCell: UITableViewCell {
+    static let identifier = "LabelTableViewCell"
     
-    private let repaymentLabel = UILabel().then {
-        $0.text = "Sleep Repay (Manual)"
-    }
+    private let label = UILabel()
     
     var onButtonTapped: ((Int) -> Void)?
     
@@ -31,11 +29,15 @@ class ManualRepaymentTableViewCell: UITableViewCell {
         accessoryType = .disclosureIndicator
         backgroundColor = .customBackgroundColor
         
-        contentView.addSubview(repaymentLabel)
+        contentView.addSubview(label)
         
-        repaymentLabel.snp.makeConstraints {
+        label.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)
             $0.centerY.equalToSuperview()
         }
+    }
+    
+    func configure(with text: String) {
+        label.text = text
     }
 }
