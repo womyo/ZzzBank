@@ -16,6 +16,9 @@ final class MissionViewModel {
     private let realm = RealmManager.shared
     @Published var missions: [Mission] = []
     @Published var bingoLineMap: [Int: Set<LineDirection>] = [:]
+    var revealedBingos: Set<[Int]> = []
+    var foundNewBingo = false
+    
     var bingoIndexes = [
         [0, 1, 2, 3, 4],
         [5, 6, 7, 8, 9],
@@ -101,13 +104,39 @@ final class MissionViewModel {
         }
     }
     
-    func isBingo() {
+    func isBingo(tappedIndex: Int) {
+        foundNewBingo = false
+        
         for bingo in bingoIndexes {
-            if bingo.allSatisfy({ missions[$0].completed }), let dir = direction(for: bingo) {
+            if bingo.contains(tappedIndex),
+               bingo.allSatisfy({ missions[$0].completed }),
+               !revealedBingos.contains(bingo),
+               let dir = direction(for: bingo) {
+                
+                revealedBingos.insert(bingo)
+                foundNewBingo = true
                 for index in bingo {
                     bingoLineMap[index, default: []].insert(dir)
                 }
             }
         }
+    }
+    
+    func mockUpData() {
+        completeMission(title: "First Debt")
+        completeMission(title: "Reset Used")
+        completeMission(title: "Sleep Twice")
+        completeMission(title: "Debt Master")
+        completeMission(title: "Perfect Week")
+        
+        completeMission(title: "First Debt")
+        completeMission(title: "First Repay")
+        completeMission(title: "Three Days Log")
+        completeMission(title: "No Delay")
+        completeMission(title: "Use a Coupon")
+        
+        completeMission(title: "Early Bird")
+        completeMission(title: "5 Days Streak")
+        completeMission(title: "No Alarm Win")
     }
 }
