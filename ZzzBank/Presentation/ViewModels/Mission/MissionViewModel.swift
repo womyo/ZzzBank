@@ -13,8 +13,9 @@ enum Direction {
 }
 
 final class MissionViewModel {
+    static let shared = MissionViewModel()
     private let realm = RealmManager.shared
-    
+
     @Published var missions: [Mission] = []
     @Published var directionMap: [Int: Set<Direction>] = [:]
     
@@ -22,49 +23,43 @@ final class MissionViewModel {
     var didFindNewBingo = false
     
     var bingoLines: [[Int]] = [
-        [0, 1, 2, 3, 4],
-        [5, 6, 7, 8, 9],
-        [10, 11, 12, 13, 14],
-        [15, 16, 17, 18, 19],
-        [20, 21, 22, 23, 24],
+        [0, 1, 2, 3],
+        [4, 5, 6, 7],
+        [8, 9, 10, 11],
+        [12, 13, 14, 15],
         
-        [0, 5, 10, 15, 20],
-        [1, 6, 11, 16, 21],
-        [2, 7, 12, 17, 22],
-        [3, 8, 13, 18, 23],
-        [4, 9, 14, 19, 24],
+        [0, 4, 8, 12],
+        [1, 5, 9, 13],
+        [2, 6, 10, 14],
+        [3, 7, 11, 15],
         
-        [0, 6, 12, 18, 24],
-        [4, 8, 12, 16, 20]
+        [0, 5, 10, 15],
+        [3, 6, 9, 12]
     ]
+    
+    private init() {}
     
     func initMissions() {
         let sampleMissions: [Mission] = [
-            Mission(title: "First Debt", content: ""),
-            Mission(title: "First Repay", content: ""),
-            Mission(title: "Three Days Log", content: ""),
-            Mission(title: "No Delay", content: ""),
             Mission(title: "Use a Coupon", content: ""),
-            Mission(title: "7 Hours Sleep", content: ""),
-            Mission(title: "Reset Used", content: ""),
-            Mission(title: "5AM Challenge", content: ""),
+            Mission(title: "Morning Champion", content: ""),
+            Mission(title: "Repayment Rookie", content: ""),
+            Mission(title: "Pebble Rescuer", content: ""),
+            
+            Mission(title: "Big Sleeper Loan", content: ""),
+            Mission(title: "3 Days Login", content: ""),
+            Mission(title: "Goal Setter", content: ""),
+            Mission(title: "Bedtime Pro", content: ""),
+            
             Mission(title: "Early Bird", content: ""),
-            Mission(title: "Sleep on Time", content: ""),
-            Mission(title: "Weekend Saver", content: ""),
+            Mission(title: "7+ Hours Sleep", content: ""),
+            Mission(title: "Sleep Loaner", content: ""),
+            Mission(title: "Bingo Master", content: ""),
+            
+            Mission(title: "Midnight Curfew", content: ""),
+            Mission(title: "Pebble in Trouble", content: ""),
             Mission(title: "Zero Interest", content: ""),
-            Mission(title: "Sleep Twice", content: ""),
-            Mission(title: "5 Days Streak", content: ""),
-            Mission(title: "Max Fatigue", content: ""),
-            Mission(title: "Silent Night", content: ""),
-            Mission(title: "Full Repay", content: ""),
-            Mission(title: "Quick Nap", content: ""),
-            Mission(title: "Debt Master", content: ""),
-            Mission(title: "No Sleep Debt", content: ""),
-            Mission(title: "One Line Bingo", content: ""),
-            Mission(title: "Five Minutes More", content: ""),
-            Mission(title: "Dream Keeper", content: ""),
-            Mission(title: "No Alarm Win", content: ""),
-            Mission(title: "Perfect Week", content: "")
+            Mission(title: "One Line Bingo", content: "")
         ]
         
         sampleMissions.forEach { mission in
@@ -86,8 +81,10 @@ final class MissionViewModel {
             return
         }
         
-        realm.update(mission) {
-            $0.completed = true
+        if !mission.completed {
+            realm.update(mission) {
+                $0.completed = true
+            }
         }
     }
     
@@ -106,13 +103,13 @@ final class MissionViewModel {
     }
     
     func direction(for line: [Int]) -> Direction? {
-        if line.allSatisfy({ $0 / 5 == line.first! / 5 }) {
+        if line.allSatisfy({ $0 / 4 == line.first! / 4 }) {
             return .horizontal
-        } else if line.allSatisfy({ $0 % 5 == line.first! % 5 }) {
+        } else if line.allSatisfy({ $0 % 4 == line.first! % 4 }) {
             return .vertical
-        } else if line == [0, 6, 12, 18, 24] {
+        } else if line == [0, 5, 10, 15] {
             return .diagonal
-        } else if line == [4, 8, 12, 16, 20] {
+        } else if line == [3, 6, 9, 12] {
             return .reverseDiagonal
         } else {
             return nil
@@ -155,9 +152,9 @@ final class MissionViewModel {
     
     func completeMockMissions() {
         [
-            "First Debt", "Reset Used", "Sleep Twice", "Debt Master", "Perfect Week",
-            "First Repay", "Three Days Log", "No Delay", "Use a Coupon",
-            "Early Bird", "5 Days Streak", "No Alarm Win"
+            "Use a Coupon", "Morning Champion", "Repayment Rookie", "Pebble Rescuer", "3 Days Login",
+            "Sleep Loaner", "One Line Bingo", "Goal Setter", "Sleep Loaner",
+            "Zero Interest"
         ].forEach { completeMission(title: $0) }
     }
 }

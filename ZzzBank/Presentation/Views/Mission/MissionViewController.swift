@@ -11,7 +11,7 @@ import Then
 import Lottie
 
 class MissionViewController: UIViewController {
-    private let viewModel: MissionViewModel
+    private let viewModel = MissionViewModel.shared
     
     let topSpacer = UIView()
     let bottomSpacer = UIView()
@@ -19,12 +19,7 @@ class MissionViewController: UIViewController {
     private let titleLabel = UILabel().then {
         $0.text = "B  I  N  G  O  !"
         $0.font = .systemFont(ofSize: 48, weight: .semibold)
-    }
-    
-    private let animationView = LottieAnimationView(name: "check_animation").then {
-        $0.contentMode = .scaleAspectFit
-        $0.loopMode = .loop
-        $0.isHidden = true
+        $0.textAlignment = .center
     }
 
     private lazy var collectionView: UICollectionView = {
@@ -38,48 +33,50 @@ class MissionViewController: UIViewController {
         return collectionView
     }()
     
-    init(viewModel: MissionViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, collectionView])
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.spacing = 24
+        
+        return stackView
+    }()
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    private let animationView = LottieAnimationView(name: "check_animation").then {
+        $0.contentMode = .scaleAspectFit
+        $0.loopMode = .loop
+        $0.isHidden = true
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         configureUI()
-        viewModel.initMissions()
-        viewModel.completeMockMissions()
         viewModel.loadMissions()
     }
     
     private func configureUI() {
         view.backgroundColor = .customBackgroundColor
-        view.addSubviews(titleLabel, collectionView, bottomSpacer, animationView)
+        view.addSubviews(stackView, bottomSpacer, animationView)
         
         let spacing: CGFloat = 8
-        let numberOfColumns: CGFloat = 5
+        let numberOfColumns: CGFloat = 4
         
         let totalSpacing: CGFloat = (numberOfColumns - 1) * spacing
         let itemWidth = (UIScreen.main.bounds.width - totalSpacing) / numberOfColumns
         let totalHeight = itemWidth * numberOfColumns + spacing * (numberOfColumns - 1)
         
-        titleLabel.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.bottom.equalTo(collectionView.snp.top).offset(-10)
-        }
-        
         collectionView.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview()
-            $0.centerY.equalToSuperview()
             $0.height.equalTo(totalHeight)
         }
         
+        stackView.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview()
+            $0.centerY.equalToSuperview()
+        }
+        
         bottomSpacer.snp.makeConstraints {
-            $0.top.equalTo(collectionView.snp.bottom)
+            $0.top.equalTo(stackView.snp.bottom)
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
         
@@ -92,7 +89,7 @@ class MissionViewController: UIViewController {
 
 extension MissionViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        25
+        16
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -101,7 +98,8 @@ extension MissionViewController: UICollectionViewDataSource, UICollectionViewDel
         }
         
         cell.layer.borderColor = UIColor.systemGray.cgColor
-        cell.layer.backgroundColor = viewModel.missions[indexPath.item].completed ? UIColor.main.cgColor : UIColor.systemGray.cgColor
+        cell.layer.backgroundColor = viewModel.missions[indexPath.item].completed ? UIColor.main.cgColor : UIColor.systemGray4.cgColor
+        
         cell.configure(with: viewModel.missions[indexPath.item].title)
         
         cell.setLines(horizontal: viewModel.missions[indexPath.item].horizontal,
@@ -114,7 +112,7 @@ extension MissionViewController: UICollectionViewDataSource, UICollectionViewDel
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let spacing: CGFloat = 8
-        let numberOfColumns: CGFloat = 5
+        let numberOfColumns: CGFloat = 4
         
         let totalSpacing: CGFloat = (numberOfColumns - 1) * spacing
         let itemWidth = (UIScreen.main.bounds.width - totalSpacing) / numberOfColumns
@@ -138,6 +136,8 @@ extension MissionViewController: UICollectionViewDataSource, UICollectionViewDel
                     self.animationView.stop()
                 }
             }
+            
+            MissionViewModel.shared.completeMission(title: "One Line Bingo")
         }
         
         collectionView.reloadData()

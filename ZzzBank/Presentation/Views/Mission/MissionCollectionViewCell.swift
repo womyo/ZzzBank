@@ -19,22 +19,22 @@ class MissionCollectionViewCell: UICollectionViewCell {
     }
     
     private let horizontalLineView = UIView().then {
-        $0.backgroundColor = .black
+        $0.backgroundColor = .customBackgroundColor.withAlphaComponent(0.7)
         $0.isHidden = true
     }
     
     private let verticalLineView = UIView().then {
-        $0.backgroundColor = .black
+        $0.backgroundColor = .customBackgroundColor.withAlphaComponent(0.7)
         $0.isHidden = true
     }
     
     private let diagonalLineView = UIView().then {
-        $0.backgroundColor = .black
+        $0.backgroundColor = .customBackgroundColor.withAlphaComponent(0.7)
         $0.isHidden = true
     }
     
     private let reverseDiagonalLineView = UIView().then {
-        $0.backgroundColor = .black
+        $0.backgroundColor = .customBackgroundColor.withAlphaComponent(0.7)
         $0.isHidden = true
     }
     
@@ -57,19 +57,19 @@ class MissionCollectionViewCell: UICollectionViewCell {
         horizontalLineView.snp.makeConstraints {
             $0.centerY.equalToSuperview()
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(2)
+            $0.height.equalTo(3)
         }
         
         verticalLineView.snp.makeConstraints {
             $0.top.bottom.equalToSuperview()
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(2)
+            $0.width.equalTo(3)
         }
         
         diagonalLineView.snp.makeConstraints {
             $0.center.equalToSuperview()
             $0.width.equalToSuperview().multipliedBy(1.4)
-            $0.height.equalTo(2)
+            $0.height.equalTo(3)
         }
         
         diagonalLineView.transform = CGAffineTransform(rotationAngle: .pi * 0.25)
@@ -77,7 +77,7 @@ class MissionCollectionViewCell: UICollectionViewCell {
         reverseDiagonalLineView.snp.makeConstraints {
             $0.center.equalToSuperview()
             $0.width.equalToSuperview().multipliedBy(1.4)
-            $0.height.equalTo(2)
+            $0.height.equalTo(3)
         }
         
         reverseDiagonalLineView.transform = CGAffineTransform(rotationAngle: .pi * 1.75)
