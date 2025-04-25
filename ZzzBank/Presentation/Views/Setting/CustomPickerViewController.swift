@@ -62,6 +62,11 @@ class CustomPickerViewController: UIViewController {
                     
                     if amount > 0 {
                         self.viewModel.payLoad(amount: amount)
+                        
+                        if Int(value)! >= 7 {
+                            MissionViewModel.shared.completeMission(title: "7+ Hours Sleep")
+                        }
+                        
                         self.dismiss(animated: true, completion: nil)
                     } else {
                         let alertController = UIAlertController(title: "Not enough sleep to repay", message: "You need at least \(UserDefaults.standard.integer(forKey: "personSleep") + 1) hours of sleep to repay.", preferredStyle: .alert)

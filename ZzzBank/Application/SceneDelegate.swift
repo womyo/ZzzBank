@@ -9,7 +9,7 @@ import UIKit
 import BackgroundTasks
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
+    private let viewModel = LoanViewModel()
     var window: UIWindow?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -20,6 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
+//        window?.rootViewController = UINavigationController(rootViewController: MissionViewController())
         
         if UserDefaults.standard.value(forKey: "didFinishOnboarding") == nil {
             let viewController = OnboardingPageViewController()
@@ -73,6 +74,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }) { _ in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     self.requestNotificationAuthorization()
+                    MissionViewModel.shared.initMissions()
                 }
             }
         }
@@ -98,6 +100,29 @@ extension SceneDelegate: UNUserNotificationCenterDelegate {
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        completionHandler()
-    }
+            if response.notification.request.identifier == "DailyNotification" {
+                HealthKitManager.shared.getSleepData() { result in
+                    DispatchQueue.main.async {
+                        let amount = result - UserDefaults.standard.integer(forKey: "personSleep")
+                        if amount > 0 {
+                            self.viewModel.payLoad(amount: amount)
+                            
+                            if result >= 7 {
+                                MissionViewModel.shared.completeMission(title: "7+ Hours Sleep")
+                            }
+                        }
+                        
+                        self.viewModel.getLoanRecords().enumerated().forEach { index, loanRecord in
+                            if Date() > loanRecord.repaymentDate {
+                                let overdueDays = Calendar.current.dateComponents([.day], from: loanRecord.repaymentDate, to: Date()).day ?? 0
+                                self.viewModel.updateLoanRecords(index: index, overdueDays: overdueDays)
+                            }
+                        }
+                    }
+                }
+            }
+            
+            completionHandler()
+        }
+
 }

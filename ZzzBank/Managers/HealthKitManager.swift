@@ -55,6 +55,20 @@ class HealthKitManager {
                         if let sample = item as? HKCategorySample, sample.value != 2 {
                             let timeInterval = sample.endDate.timeIntervalSince(sample.startDate)
                             totalSleep += timeInterval
+                            
+                            // 자는 시간, 일어나는 시간에 대한 작업 임시 처리
+                            let bedtime = sample.startDate
+                            let wakeUpTime = sample.endDate
+                            let startOfDay = Calendar.current.startOfDay(for: bedtime)
+                            let midnight = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay)!
+                            
+                            if bedtime < midnight {
+                                MissionViewModel.shared.completeMission(title: "Midnight Curfew")
+                            }
+                            
+                            if calander.component(.hour, from: wakeUpTime) < 6 {
+                                MissionViewModel.shared.completeMission(title: "Early Bird")
+                            }
                         }
                     }
                 }
