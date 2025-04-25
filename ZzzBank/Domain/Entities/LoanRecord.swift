@@ -27,5 +27,11 @@ final class LoanRecord: Object, DateSortable {
     override static func primaryKey() -> String? {
         return "id"
     }
+    
+    convenience init(loanTime: Int, loanTimeCP: Int) {
+        self.init()
+        self.loanTime = loanTime
+        self.loanTimeCP = loanTimeCP
+    }
 }
 

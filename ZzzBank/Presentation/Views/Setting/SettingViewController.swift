@@ -123,7 +123,7 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
             
             present(vc, animated: true)
         } else if indexPath.section == 2 && indexPath.row == 0 {
-            let vc = MissionViewController(viewModel: MissionViewModel())
+            let vc = MissionViewController()
             
             navigationController?.pushViewController(vc, animated: true)
         }

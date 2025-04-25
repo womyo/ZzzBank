@@ -160,10 +160,15 @@ class HomeViewController: UIViewController {
         switch debt {
         case 0..<5:
             mentLabel.text = "You’re doing fine. Keep it up!"
+            
+            if viewModel.condition != .healthy {
+                MissionViewModel.shared.completeMission(title: "Pebble Rescuer")
+            }
             viewModel.condition = .healthy
         case 5..<10:
             mentLabel.text = "Time for a quick break or nap."
             viewModel.condition = .tired
+            MissionViewModel.shared.completeMission(title: "Pebble in Trouble")
         case 10..<20:
             mentLabel.text = "Low energy. Get some good sleep."
             viewModel.condition = .exhausted

@@ -13,6 +13,10 @@ final class Mission: Object {
     @objc dynamic var title: String = ""
     @objc dynamic var content: String = ""
     @objc dynamic var completed: Bool = false
+    @objc dynamic var horizontal: Bool = false
+    @objc dynamic var vertical: Bool = false
+    @objc dynamic var diagonal: Bool = false
+    @objc dynamic var reverseDiagonal: Bool = false
     
     override static func primaryKey() -> String? {
          return "id"

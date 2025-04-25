@@ -21,13 +21,15 @@ class StepperTableViewCell: UITableViewCell {
         $0.maximumValue = 10
         $0.stepValue = 1
         
-        $0.addTarget(StepperTableViewCell.self, action: #selector(stepperValueChange), for: .valueChanged)
+        $0.addTarget(self, action: #selector(stepperValueChange), for: .valueChanged)
     }
     
     @objc private func stepperValueChange(_ sender: UIStepper) {
         let sleepValue = Int(sender.value)
         UserDefaults.standard.set(sleepValue, forKey: "personSleep")
         titleLabel.text = "Daily Sleep Goal: \(sleepValue)h"
+        
+        MissionViewModel.shared.completeMission(title: "Goal Setter")
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

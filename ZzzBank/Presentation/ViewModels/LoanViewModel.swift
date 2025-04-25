@@ -27,6 +27,8 @@ enum RecordSort: String {
 
 final class LoanViewModel: ObservableObject {
     private let realm = RealmManager.shared
+    private let missionViewModel = MissionViewModel.shared
+    
     @Published var timeValue: CGFloat = 0.0
     @Published var loanRecords = []
     @Published var combinedRecords: [DateSortable] = []
@@ -48,9 +50,21 @@ final class LoanViewModel: ObservableObject {
         let loan = LoanRecord()
         loan.loanTime = Int(timeValue)
         loan.loanTimeCP = Int(timeValue)
+        // convenience init으로 인해 아래와 같이 사용 가능
+//        let loan = LoanRecord(loanTime: Int(timeValue), loanTimeCP: Int(timeValue))
+        
         realm.write(loan)
         
-        NotificationManager.shared.scheduleNotification(id: loan.id, endDate: loan.repaymentDate) // 대출 마감 당일에 알람 등록
+        // 대출 마감 당일에 알람 등록
+        NotificationManager.shared.scheduleNotification(id: loan.id, endDate: loan.repaymentDate)
+        
+        // 첫 Borrow시 Mission
+        missionViewModel.completeMission(title: "Sleep Loaner")
+        
+        // 많이 빌렸을 시 Mission
+        if Int(timeValue) > 10 {
+            missionViewModel.completeMission(title: "Big Sleeper Loan")
+        }
     }
 
     func getLoanLimit() -> Int {
@@ -69,6 +83,12 @@ final class LoanViewModel: ObservableObject {
     
     func getLoanRecords() -> Results<LoanRecord> {
         return realm.read(LoanRecord.self)
+    }
+    
+    func getLoanRecordsTotal() -> Int {
+        let loanRecords = realm.read(LoanRecord.self)
+        
+        return loanRecords.reduce(0) { $0 + $1.loanTimeCP }
     }
     
     func updateLoanRecords(index: Int, overdueDays: Int) {
@@ -154,8 +174,9 @@ final class LoanViewModel: ObservableObject {
         let loanLimit = realm.read(LoanLimit.self)[0]
         let loanRecords = realm.read(LoanRecord.self)
         var remainingAmount = amount
+        let remainingInterest = loanRecords.reduce(0, { $0 + $1.overdueInterest })
         
-        // borrowed가 0이면
+        // borrowed가 0이 아니면
         if loanRecords.reduce(0, { $0 + $1.loanTimeCP }) != 0 {
             saveRepayment(amount)
         }
@@ -194,6 +215,14 @@ final class LoanViewModel: ObservableObject {
             if shouldDelete {
                 NotificationManager.shared.removeNotification(identifier: loanRecord.id) // 이미 갚은 대출은 알림 삭제
             }
+        }
+        
+        // 첫 Repay시 Mission clear
+        missionViewModel.completeMission(title: "Repayment Rookie")
+        
+        // Interest를 다 갚으면
+        if remainingInterest != 0 && loanRecords.reduce(0, { $0 + $1.overdueInterest}) == 0 {
+            missionViewModel.completeMission(title: "Zero Interest")
         }
     }
 }
