@@ -63,8 +63,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+        UNUserNotificationCenter.current().setBadgeCount(0)
+        
+        if shouldSyncNow(source: .appLaunch) {
+            syncData()
+        } else {
+            print("Already synced today")
+        }
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
@@ -127,23 +132,61 @@ extension SceneDelegate: UNUserNotificationCenterDelegate {
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         if response.notification.request.identifier == "DailyNotification" {
-            HealthKitManager.shared.getSleepData() { result in
-                DispatchQueue.main.async {
-                    let amount = result - UserDefaults.standard.integer(forKey: "personSleep")
-                    if amount > 0 {
-                        self.viewModel.payLoad(amount: amount)
-                    }
-                    
-                    self.viewModel.getLoanRecords().enumerated().forEach { index, loanRecord in
-                        if Date() > loanRecord.repaymentDate {
-                            let overdueDays = Calendar.current.dateComponents([.day], from: loanRecord.repaymentDate, to: Date()).day ?? 0
-                            self.viewModel.updateLoanRecords(index: index, overdueDays: overdueDays)
-                        }
-                    }
-                }
+            if shouldSyncNow(source: .notification) {
+                syncData()
+            } else {
+                print("Already synced today")
             }
         }
         
         completionHandler()
     }
+    
+    func shouldSyncNow(source: SyncSource) -> Bool {
+        let now = Date()
+        let noonToday = Calendar.current.date(bySettingHour: 12, minute: 0, second: 0, of: now)!
+        let lastSynced = UserDefaults.standard.object(forKey: "lastSyncedDate") as? Date
+
+        // 1. 오늘 갱신한 적이 있다면 → 갱신 X
+        if let last = lastSynced, Calendar.current.isDateInToday(last) {
+            return false
+        }
+
+        // 2. 알림 클릭이라면 → 무조건 갱신 (단 1회)
+        if source == .notification {
+            return true
+        }
+
+        // 3. 앱 실행이라면 → 정오 이후일 경우에만 갱신
+        if source == .appLaunch, now >= noonToday {
+            return true
+        }
+
+        return false
+    }
+    
+    func syncData() {
+        HealthKitManager.shared.getSleepData() { result in
+            DispatchQueue.main.async {
+                self.viewModel.getLoanRecords().enumerated().forEach { index, loanRecord in
+                    if Date() > loanRecord.repaymentDate {
+                        let overdueDays = Calendar.current.dateComponents([.day], from: loanRecord.repaymentDate, to: Date()).day ?? 0
+                        self.viewModel.updateLoanRecords(index: index, overdueDays: overdueDays)
+                    }
+                }
+                
+                let amount = result - UserDefaults.standard.integer(forKey: "personSleep")
+                if amount > 0 {
+                    self.viewModel.payLoad(amount: amount)
+                }
+                
+                UserDefaults.standard.set(Date(), forKey: "lastSyncedDate")
+            }
+        }
+    }
+}
+
+enum SyncSource {
+    case appLaunch
+    case notification
 }

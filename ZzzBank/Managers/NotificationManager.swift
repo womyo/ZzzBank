@@ -19,11 +19,13 @@ class NotificationManager {
         content.title = "ZzzBank"
         content.body = "Your loan is due today!"
         content.sound = .default
+        content.badge = 1
         
         content.userInfo = ["body": content.body]
         
         var dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: endDate)
         dateComponents.hour = 10
+        dateComponents.minute = 0
         
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
         let request = UNNotificationRequest(identifier: "Notification-\(id)", content: content, trigger: trigger)
@@ -39,7 +41,6 @@ class NotificationManager {
         let content = UNMutableNotificationContent()
         content.title = "ZzzBank"
         content.body = "Sleep data is updated. Check now."
-        content.sound = .default
         
         var dateComponents = DateComponents()
         dateComponents.hour = 12
