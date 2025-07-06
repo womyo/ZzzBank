@@ -19,14 +19,18 @@ class LoanViewController: UIViewController {
         button.backgroundColor = .mainColor
         button.layer.cornerRadius = 12
         button.addAction(UIAction { [weak self] _ in
-            if let timeValue = self?.viewModel.timeValue, timeValue > 0 {
-                self?.viewModel.saveLoan()
-                self?.viewModel.updateLoanLimit()
-                self?.navigationController?.popViewController(animated: true)
-            } else {
-                let alertController = UIAlertController(title: "No time set", message: "Please set how many hours you want to borrow.", preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                self?.present(alertController, animated: true, completion: nil)
+            guard let self = self else { return }
+            
+            self.confirmButton.animatePress {
+                if self.viewModel.timeValue > 0 {
+                    self.viewModel.saveLoan()
+                    self.viewModel.updateLoanLimit()
+                    self.navigationController?.popViewController(animated: true)
+                } else {
+                    let alertController = UIAlertController(title: "No time set", message: "Please set how many hours you want to borrow.", preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    self.present(alertController, animated: true, completion: nil)
+                }
             }
         }, for: .touchUpInside)
         return button

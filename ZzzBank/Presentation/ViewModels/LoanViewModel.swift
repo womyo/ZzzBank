@@ -71,6 +71,12 @@ final class LoanViewModel: ObservableObject {
         return realm.read(LoanRecord.self)
     }
     
+    func getLoanRecordsTotal() -> Int {
+        let loanRecords = realm.read(LoanRecord.self)
+        
+        return loanRecords.reduce(0) { $0 + $1.loanTimeCP }
+    }
+    
     func updateLoanRecords(index: Int, overdueDays: Int) {
         let loanRecord = realm.read(LoanRecord.self)[index]
         
@@ -155,17 +161,16 @@ final class LoanViewModel: ObservableObject {
         let loanRecords = realm.read(LoanRecord.self)
         var remainingAmount = amount
         
-        // borrowed가 0이면
-        if loanRecords.reduce(0, { $0 + $1.loanTimeCP }) != 0 {
+        // borrowed가 0보다 크면
+        if getLoanRecordsTotal() > 0 {
             saveRepayment(amount)
         }
         
+        // 1. 연체 이자 먼저 모두 갚기
         for loanRecord in loanRecords {
-            var shouldDelete = false
-            guard remainingAmount > 0 else { return }
-            
+            guard remainingAmount > 0 else { break }
+
             realm.update(loanRecord) { loanRecord in
-                // 연체 이자 상환
                 if loanRecord.overdueInterest > 0 {
                     if remainingAmount >= loanRecord.overdueInterest {
                         remainingAmount -= loanRecord.overdueInterest
@@ -175,9 +180,17 @@ final class LoanViewModel: ObservableObject {
                         remainingAmount = 0
                     }
                 }
-                
-                // 원금(잠) 상환
-                if remainingAmount > 0 && loanRecord.loanTimeCP > 0 {
+            }
+        }
+        
+        
+        // 2. 남은 금액으로 원금 갚기
+        for loanRecord in loanRecords {
+            var shouldDelete = false
+            guard remainingAmount > 0 else { break }
+
+            realm.update(loanRecord) { loanRecord in
+                if loanRecord.loanTimeCP > 0 {
                     if remainingAmount >= loanRecord.loanTimeCP {
                         remainingAmount -= loanRecord.loanTimeCP
                         loanLimit.limitTime += loanRecord.loanTimeCP
@@ -190,9 +203,9 @@ final class LoanViewModel: ObservableObject {
                     }
                 }
             }
-            
+
             if shouldDelete {
-                NotificationManager.shared.removeNotification(identifier: loanRecord.id) // 이미 갚은 대출은 알림 삭제
+                NotificationManager.shared.removeNotification(identifier: loanRecord.id)
             }
         }
     }

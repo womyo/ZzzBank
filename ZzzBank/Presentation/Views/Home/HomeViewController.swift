@@ -70,8 +70,10 @@ class HomeViewController: UIViewController {
         button.addAction(UIAction { [weak self] _ in
             guard let self = self else { return }
             
-            let vc = LoanViewController(viewModel: self.viewModel)
-            self.navigationController?.pushViewController(vc, animated: true)
+            self.loanButton.animatePress {
+                let vc = LoanViewController(viewModel: self.viewModel)
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
         }, for: .touchUpInside)
         
         return button
