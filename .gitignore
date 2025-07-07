@@ -136,7 +136,7 @@ iOSInjectionProject/
 *.xcconfig
 
 # Ignore GoogleServiceInfo file
-GoogleService-Info.plist
+**/GoogleService-Info.plist
 
 # images
 *.atlas

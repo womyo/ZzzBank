@@ -12,4 +12,5 @@ extension UIColor {
     static let shadowColor: UIColor = UIColor(named: "shadowColor")!
     static let mainColor: UIColor = UIColor(named: "mainColor")!
     static let oppositeColor: UIColor = UIColor(named: "oppositeColor")!
+    static let cellColor: UIColor = UIColor(named: "cellColor")!
 }

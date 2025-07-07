@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C22649392E1C0F7A009F9CDF /* FirebaseAI in Frameworks */ = {isa = PBXBuildFile; productRef = C22649382E1C0F7A009F9CDF /* FirebaseAI */; };
 		C280A35B2D30326D00E74D7A /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = C280A35A2D30326D00E74D7A /* SnapKit */; };
 		C280A38E2D3038F400E74D7A /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C280A38D2D3038F400E74D7A /* RealmSwift */; };
 		C280A38F2D3038FD00E74D7A /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = C280A38D2D3038F400E74D7A /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -58,6 +59,7 @@
 			files = (
 				C280A38E2D3038F400E74D7A /* RealmSwift in Frameworks */,
 				C280A35B2D30326D00E74D7A /* SnapKit in Frameworks */,
+				C22649392E1C0F7A009F9CDF /* FirebaseAI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,6 +105,7 @@
 			packageProductDependencies = (
 				C280A35A2D30326D00E74D7A /* SnapKit */,
 				C280A38D2D3038F400E74D7A /* RealmSwift */,
+				C22649382E1C0F7A009F9CDF /* FirebaseAI */,
 			);
 			productName = ZzzBank;
 			productReference = C220C1F02D2B999B00321039 /* ZzzBank.app */;
@@ -135,6 +138,7 @@
 			packageReferences = (
 				C280A3592D30326D00E74D7A /* XCRemoteSwiftPackageReference "SnapKit" */,
 				C280A38C2D3038F400E74D7A /* XCRemoteSwiftPackageReference "realm-swift" */,
+				C22649372E1C0F7A009F9CDF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C220C1F12D2B999B00321039 /* Products */;
@@ -380,6 +384,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		C22649372E1C0F7A009F9CDF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.15.0;
+			};
+		};
 		C280A3592D30326D00E74D7A /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit";
@@ -399,6 +411,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		C22649382E1C0F7A009F9CDF /* FirebaseAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C22649372E1C0F7A009F9CDF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAI;
+		};
 		C280A35A2D30326D00E74D7A /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C280A3592D30326D00E74D7A /* XCRemoteSwiftPackageReference "SnapKit" */;
