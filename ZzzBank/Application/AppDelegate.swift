@@ -8,13 +8,17 @@
 import UIKit
 import BackgroundTasks
 import UserNotifications
+import FirebaseCore
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        FirebaseApp.configure()
+        UINavigationBar.appearance().tintColor = .mainColor
         
         print(RealmManager.shared.getLocationOfDefaultRealm())
+        
         return true
     }
 
