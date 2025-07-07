@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class SettingViewController: UIViewController {
     private let viewModel: LoanViewModel
@@ -21,6 +22,7 @@ class SettingViewController: UIViewController {
         tableView.register(AlertTableViewCell.self, forCellReuseIdentifier: AlertTableViewCell.identifier)
         tableView.register(ManualRepaymentTableViewCell.self, forCellReuseIdentifier: ManualRepaymentTableViewCell.identifier)
         tableView.register(StepperTableViewCell.self, forCellReuseIdentifier: StepperTableViewCell.identifier)
+        tableView.register(ChatViewCell.self, forCellReuseIdentifier: ChatViewCell.identifier)
         
         return tableView
     }()
@@ -52,7 +54,7 @@ class SettingViewController: UIViewController {
 
 extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
-        2
+        3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -61,6 +63,8 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
             return 1
         case 1:
             return 2
+        case 2:
+            return 1
         default:
             return 0
         }
@@ -91,6 +95,17 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
             default:
                 return UITableViewCell()
             }
+        case 2:
+            switch indexPath.row {
+            case 0:
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatViewCell.identifier, for: indexPath) as? ChatViewCell else {
+                    return UITableViewCell()
+                }
+            
+                return cell
+            default:
+                return UITableViewCell()
+            }
         default:
             return UITableViewCell()
         }
@@ -111,6 +126,19 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
             
             present(vc, animated: true)
         }
+        
+        switch indexPath.section {
+        case 2:
+            switch indexPath.row {
+            case 0:
+                let vc = ChatViewController(viewModel: ChatViewModel(api: GeminiAPI()), speechRecognizer: SpeechRecognizer())
+                navigationController?.pushViewController(vc, animated: true)
+            default:
+                break
+            }
+        default:
+            break
+        }
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -119,6 +147,8 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
             return "ALERT SETTINGS"
         case 1:
             return "SLEEP SETTINGS"
+        case 2:
+            return "ACTIVITY SETTINGS"
         default:
             return nil
         }
