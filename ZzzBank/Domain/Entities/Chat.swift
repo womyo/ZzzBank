@@ -1,10 +1,3 @@
-//
-//  Chat.swift
-//  Swift6
-//
-//  Created by wayblemac02 on 6/23/25.
-//
-
 import Foundation
 import SwiftData
 

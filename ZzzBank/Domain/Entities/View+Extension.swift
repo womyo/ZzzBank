@@ -1,10 +1,3 @@
-//
-//  View+Extension.swift
-//  Swift6
-//
-//  Created by wayblemac02 on 6/13/25.
-//
-
 import SwiftUI
 
 extension View {

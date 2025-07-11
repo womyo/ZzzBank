@@ -1,10 +1,3 @@
-//
-//  UIButton+Extensions.swift
-//  ZzzBank
-//
-//  Created by wayblemac02 on 4/10/25.
-//
-
 import UIKit
 
 extension UIButton {

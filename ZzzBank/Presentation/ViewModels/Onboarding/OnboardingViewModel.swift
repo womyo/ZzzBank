@@ -1,10 +1,3 @@
-//
-//  OnboardingViewModel.swift
-//  ZzzBank
-//
-//  Created by wayblemac02 on 4/8/25.
-//
-
 import Foundation
 
 final class OnboardingViewModel {
