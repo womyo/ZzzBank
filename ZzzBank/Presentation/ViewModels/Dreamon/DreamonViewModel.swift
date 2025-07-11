@@ -151,7 +151,7 @@ final class DreamonViewModel: ObservableObject {
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
                 
                 if isTurn {
-                    damage = calculateDamage(attack: dreamon.attack, defense: enemyDreamon.defense, defenderHP: enemyDreamon.hp, typeMultiplier: 1)
+                    damage = calculateDamage(attack: dreamon.attack, defense: enemyDreamon.defense, defenderHP: enemyDreamon.hp, typeMultiplier: Dreamon.typeEffectiveness[dreamon.type]?[enemyDreamon.type] ?? 1.0)
                     enemyDamage = nil
                     showDamage = true
                     
@@ -162,7 +162,7 @@ final class DreamonViewModel: ObservableObject {
                     enemyHp = max(0, enemyHp - damage!)
                     enemyTurns.append(enemyHp)
                 } else {
-                    enemyDamage = calculateDamage(attack: enemyDreamon.attack, defense: dreamon.defense, defenderHP: dreamon.hp, typeMultiplier: 1)
+                    enemyDamage = calculateDamage(attack: enemyDreamon.attack, defense: dreamon.defense, defenderHP: dreamon.hp, typeMultiplier: Dreamon.typeEffectiveness[enemyDreamon.type]?[dreamon.type] ?? 1.0)
                     damage = nil
                     showEnemyDamage = true
                     

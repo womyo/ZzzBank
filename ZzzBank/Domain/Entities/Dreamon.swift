@@ -12,23 +12,23 @@ struct Dreamon: Codable, Hashable {
     let imageURL: String
     
     static let typeEffectiveness: Dictionary<String, [String: Double]> = [
-        "Calm": [
-            "Storm": 2.0, "Focus": 0.5
+        "Hunter": [
+            "Phantom": 2.0, "Comfort": 0.5
         ],
-        "Focus": [
-            "Calm": 2.0, "Dream": 0.5
+        "Phantom": [
+            "Dream": 2.0, "Snack": 0.5
         ],
         "Dream": [
-            "Focus": 2.0, "Awake": 0.5
+            "Sleep": 2.0, "Hunter": 0.5
         ],
-        "Awake": [
-            "Dream": 2.0, "Drowsy": 0.5
+        "Sleep": [
+            "Comfort": 2.0, "Snack": 0.5
         ],
-        "Drowsy": [
-            "Awake": 2.0, "Storm": 0.5
+        "Comfort": [
+            "Snack": 2.0, "Hunter": 0.5
         ],
-        "Storm": [
-            "Drowsy": 2.0, "Calm": 0.5
+        "Snack": [
+            "Hunter": 2.0, "Phantom": 0.5
         ]
     ]
     
