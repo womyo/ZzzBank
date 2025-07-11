@@ -56,6 +56,7 @@ class ChatViewController: UIViewController {
     
     func configureUI() {
         view.backgroundColor = .customBackgroundColor
+        navigationItem.title = "Midnight Chat"
         navigationItem.rightBarButtonItem = plusButton
         view.addSubview(tableView)
         

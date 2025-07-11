@@ -22,7 +22,7 @@ class SettingViewController: UIViewController {
         tableView.register(AlertTableViewCell.self, forCellReuseIdentifier: AlertTableViewCell.identifier)
         tableView.register(ManualRepaymentTableViewCell.self, forCellReuseIdentifier: ManualRepaymentTableViewCell.identifier)
         tableView.register(StepperTableViewCell.self, forCellReuseIdentifier: StepperTableViewCell.identifier)
-        tableView.register(ChatViewCell.self, forCellReuseIdentifier: ChatViewCell.identifier)
+        tableView.register(ActivityViewCell.self, forCellReuseIdentifier: ActivityViewCell.identifier)
         
         return tableView
     }()
@@ -64,7 +64,7 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
         case 1:
             return 2
         case 2:
-            return 1
+            return 2
         default:
             return 0
         }
@@ -98,10 +98,18 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
         case 2:
             switch indexPath.row {
             case 0:
-                guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatViewCell.identifier, for: indexPath) as? ChatViewCell else {
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: ActivityViewCell.identifier, for: indexPath) as? ActivityViewCell else {
                     return UITableViewCell()
                 }
+                cell.configure(with: "Dreamon battle")
             
+                return cell
+            case 1:
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: ActivityViewCell.identifier, for: indexPath) as? ActivityViewCell else {
+                    return UITableViewCell()
+                }
+                cell.configure(with: "Midnight Chat")
+                
                 return cell
             default:
                 return UITableViewCell()
@@ -131,6 +139,9 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
         case 2:
             switch indexPath.row {
             case 0:
+                let vc = UIHostingController(rootView: DreamonBattleView(viewModel: DreamonViewModel(usecase: DreamonAPI(), api: GeminiAPI())))
+                navigationController?.pushViewController(vc, animated: true)
+            case 1:
                 let vc = ChatViewController(viewModel: ChatViewModel(api: GeminiAPI()), speechRecognizer: SpeechRecognizer())
                 navigationController?.pushViewController(vc, animated: true)
             default:

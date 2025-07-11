@@ -1,10 +1,3 @@
-//
-//  GeminiAPI.swift
-//  Swift6
-//
-//  Created by wayblemac02 on 6/10/25.
-//
-
 import Foundation
 import FirebaseAI
 
@@ -19,6 +12,6 @@ final class GeminiAPI: Sendable {
     func generateContent(prompt: String) async throws -> String {
         let response = try await model.generateContent(prompt)
         
-        return response.text ?? "No content generated"
+        return response.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "No content generated"
     }
 }

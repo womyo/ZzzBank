@@ -1,18 +1,10 @@
-//
-//  ChatViewCell.swift
-//  ZzzBank
-//
-//  Created by 이인호 on 7/7/25.
-//
-
 import UIKit
 
-class ChatViewCell: UITableViewCell {
-    static let identifier = "ChatViewCell"
+class ActivityViewCell: UITableViewCell {
+    static let identifier = "ActivityViewCell"
     
     private let chatLabel: UILabel = {
         let label = UILabel()
-        label.text = "Midnight Chat"
         
         return label
     }()
@@ -37,5 +29,9 @@ class ChatViewCell: UITableViewCell {
             $0.leading.equalToSuperview().offset(16)
             $0.centerY.equalToSuperview()
         }
+    }
+    
+    func configure(with text: String) {
+        chatLabel.text = text
     }
 }
