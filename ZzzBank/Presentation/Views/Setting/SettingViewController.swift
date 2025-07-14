@@ -159,7 +159,7 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
         case 1:
             return "SLEEP SETTINGS"
         case 2:
-            return "ACTIVITY SETTINGS"
+            return "ACTIVITIES"
         default:
             return nil
         }

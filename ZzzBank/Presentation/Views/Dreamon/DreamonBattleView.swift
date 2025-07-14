@@ -45,6 +45,7 @@ struct DreamonBattleView: View {
                                 viewModel.isSheetPresented = true
                             } label: {
                                 Text("Select Next")
+                                    .foregroundStyle(.main)
                             }
                         } else {
                             Button {
@@ -52,6 +53,7 @@ struct DreamonBattleView: View {
                                 viewModel.didUsePass = true
                             } label: {
                                 Text("Soul Ember")
+                                    .foregroundStyle(.main)
                             }
                         }
                     }

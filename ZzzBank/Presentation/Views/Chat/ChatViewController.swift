@@ -100,4 +100,12 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate {
         
         navigationController?.pushViewController(vc, animated: true)
     }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let chat = viewModel.chats[indexPath.row]
+            viewModel.deleteChat(chat: chat)
+            tableView.reloadData()
+        }
+    }
 }

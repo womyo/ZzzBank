@@ -32,9 +32,12 @@ struct TextInputView: View {
                         let userInputText: String = viewModel.inputText
                         
                         speechRecognizer.stopTranscribing()
-                        viewModel.inputText = ""
-                        speechRecognizer.transcript = ""
                         
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            speechRecognizer.transcript = ""
+                            viewModel.inputText = ""
+                        }
+
                         let questionToGemini = """
                         You are a chat assistant.
                         Respond in a natural, friendly, and clear tone — like a smart teammate.

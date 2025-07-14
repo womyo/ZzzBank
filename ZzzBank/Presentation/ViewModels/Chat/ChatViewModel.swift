@@ -25,4 +25,15 @@ final class ChatViewModel: ObservableObject {
             fatalError("fetch failed: \(error.localizedDescription)")
         }
     }
+    
+    func deleteChat(chat: Chat) {
+        do {
+            modelContext.delete(chat)
+            try modelContext.save()
+            
+            chats.removeAll { $0.id == chat.id }
+        } catch {
+            fatalError("delete failed: \(error.localizedDescription)")
+        }
+    }
 }
