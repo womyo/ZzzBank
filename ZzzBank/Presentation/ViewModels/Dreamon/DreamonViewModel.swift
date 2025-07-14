@@ -1,4 +1,5 @@
 import Foundation
+import Kingfisher
 
 @MainActor
 final class DreamonViewModel: ObservableObject {
@@ -35,11 +36,23 @@ final class DreamonViewModel: ObservableObject {
     func getDreamonList() async {
         do {
             dreamonList = try await usecase.getDreamonList()
+            prefetchImages()
             dreamon = dreamonList.first
             
         } catch {
             print(error.localizedDescription)
         }
+    }
+    
+    func prefetchImages() {
+        let urls = dreamonList.map { URL(string: $0.imageURL)! }
+        
+        let prefetcher = ImagePrefetcher(
+            urls: urls,
+            options: [.cacheMemoryOnly],
+        )
+        
+        prefetcher.start()
     }
     
     func getDreamon() async throws -> Dreamon {
