@@ -30,6 +30,8 @@ struct TextInputView: View {
                 Task {
                     do {
                         let userInputText: String = viewModel.inputText
+                        
+                        speechRecognizer.stopTranscribing()
                         viewModel.inputText = ""
                         speechRecognizer.transcript = ""
                         
