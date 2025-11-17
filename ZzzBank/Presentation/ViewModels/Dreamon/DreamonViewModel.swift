@@ -106,13 +106,13 @@ final class DreamonViewModel: ObservableObject {
                     - Do **not** use bullet points, explanations, or additional context outside the sentence
                     """
                     
-                    do {
-                        isLoadingForBattleResult = true
-                        try await generateContent(prompt: prompt)
-                        isLoadingForBattleResult = false
-                    } catch {
-                        print("Error while generating content: \(error.localizedDescription)")
-                    }
+//                    do {
+//                        isLoadingForBattleResult = true
+//                        try await generateContent(prompt: prompt)
+//                        isLoadingForBattleResult = false
+//                    } catch {
+//                        print("Error while generating content: \(error.localizedDescription)")
+//                    }
                     
                     showBattleResult = true
                     isInBattle = false
@@ -144,13 +144,13 @@ final class DreamonViewModel: ObservableObject {
                     - Do **not** use bullet points, explanations, or additional context outside the sentence
                     """
                     
-                    do {
-                        isLoadingForBattleResult = true
-                        try await generateContent(prompt: prompt)
-                        isLoadingForBattleResult = false
-                    } catch {
-                        print("Error while generating content: \(error.localizedDescription)")
-                    }
+//                    do {
+//                        isLoadingForBattleResult = true
+//                        try await generateContent(prompt: prompt)
+//                        isLoadingForBattleResult = false
+//                    } catch {
+//                        print("Error while generating content: \(error.localizedDescription)")
+//                    }
                     
                     showBattleResult = true
                     isInBattle = false

@@ -42,8 +42,9 @@ final class MessageViewModel: ObservableObject {
     }
     
     func saveAnswerFromGemini(inputText: String) async throws {
-        let answer = try await api.generateContent(prompt: inputText)
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+//        let answer = try await api.generateContent(prompt: inputText)
+//            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let answer = "The service is currently unavailable."
         
         let message = Message(body: answer, isFromUser: false, chat: chat)
         
@@ -108,23 +109,25 @@ final class MessageViewModel: ObservableObject {
     }
     
     func createChatTitle(inputText: String) async throws -> String {
-        let prompt = """
-        The following sentence is a user-generated question.  
-        Detect the **language** of this sentence, and create a natural **chat room title** in **that exact language only**.
-
-        **Follow these rules:**
-        - The output language must match the question’s language. For example, if the question is in Japanese, the title must also be in Japanese. If it’s in English, then the title must be in English.
-        - Do not translate. **Preserve the original input language.**
-        - It should be a **short, one-line title** that looks like a chat title. Don’t make it too long.
-        - Output **only one title**, with **no explanation**.
-        - Give the title as **plain text** (no quotes, no asterisks, no formatting).
-
-        Question:  
-        \(inputText)
-        """
+//        let prompt = """
+//        The following sentence is a user-generated question.  
+//        Detect the **language** of this sentence, and create a natural **chat room title** in **that exact language only**.
+//
+//        **Follow these rules:**
+//        - The output language must match the question’s language. For example, if the question is in Japanese, the title must also be in Japanese. If it’s in English, then the title must be in English.
+//        - Do not translate. **Preserve the original input language.**
+//        - It should be a **short, one-line title** that looks like a chat title. Don’t make it too long.
+//        - Output **only one title**, with **no explanation**.
+//        - Give the title as **plain text** (no quotes, no asterisks, no formatting).
+//
+//        Question:  
+//        \(inputText)
+//        """
+//        
+//        return try await api.generateContent(prompt: prompt)
+//            .trimmingCharacters(in: .whitespacesAndNewlines)
         
-        return try await api.generateContent(prompt: prompt)
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return "New Chat"
     }
     
 //    func readMessages() {
