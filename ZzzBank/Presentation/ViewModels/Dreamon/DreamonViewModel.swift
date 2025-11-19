@@ -1,5 +1,6 @@
 import Foundation
 import Kingfisher
+import FoundationModels
 
 @MainActor
 final class DreamonViewModel: ObservableObject {
@@ -106,15 +107,12 @@ final class DreamonViewModel: ObservableObject {
                     - Do **not** use bullet points, explanations, or additional context outside the sentence
                     """
                     
-//                    do {
-//                        isLoadingForBattleResult = true
-//                        try await generateContent(prompt: prompt)
-//                        isLoadingForBattleResult = false
-//                    } catch {
-//                        print("Error while generating content: \(error.localizedDescription)")
-//                    }
-                    
-                    showBattleResult = true
+                    if #available(iOS 26.0, *) {
+                        isLoadingForBattleResult = true
+                        await generateContent(prompt: prompt)
+                        isLoadingForBattleResult = false
+                        showBattleResult = true
+                    }
                     isInBattle = false
                     
                     if turns.count != enemyTurns.count {
@@ -144,15 +142,12 @@ final class DreamonViewModel: ObservableObject {
                     - Do **not** use bullet points, explanations, or additional context outside the sentence
                     """
                     
-//                    do {
-//                        isLoadingForBattleResult = true
-//                        try await generateContent(prompt: prompt)
-//                        isLoadingForBattleResult = false
-//                    } catch {
-//                        print("Error while generating content: \(error.localizedDescription)")
-//                    }
-                    
-                    showBattleResult = true
+                    if #available(iOS 26.0, *) {
+                        isLoadingForBattleResult = true
+                        await generateContent(prompt: prompt)
+                        isLoadingForBattleResult = false
+                        showBattleResult = true
+                    }
                     isInBattle = false
                     
                     if turns.count != enemyTurns.count {
@@ -211,7 +206,15 @@ final class DreamonViewModel: ObservableObject {
         return Int(damage.rounded())
     }
     
-    func generateContent(prompt: String) async throws {
-        battleResultText = try await api.generateContent(prompt: prompt)
+    @available(iOS 26.0, *)
+    func generateContent(prompt: String) async {
+        let session = LanguageModelSession()
+        
+        do {
+            battleResultText = try await session.respond(to: prompt).content
+        } catch {
+            battleResultText = "Failed to analyze: \(error.localizedDescription)"
+            print("Failed to analyze: \(error.localizedDescription)")
+        }
     }
 }

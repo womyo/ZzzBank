@@ -2,6 +2,7 @@ import Foundation
 import SwiftData
 import Combine
 import WidgetKit
+import FoundationModels
 
 @MainActor
 final class MessageViewModel: ObservableObject {
@@ -42,16 +43,22 @@ final class MessageViewModel: ObservableObject {
     }
     
     func saveAnswerFromGemini(inputText: String) async throws {
-//        let answer = try await api.generateContent(prompt: inputText)
-//            .trimmingCharacters(in: .whitespacesAndNewlines)
-        let answer = "The service is currently unavailable."
-        
-        let message = Message(body: answer, isFromUser: false, chat: chat)
-        
-        print(answer)
+        let message = Message(body: "", isFromUser: false, chat: chat)
         messages.append(message)
-        modelContext.insert(message)
         
+        if #available(iOS 26.0, *) {
+            let session = LanguageModelSession()
+            let stream = session.streamResponse(to: inputText)
+            
+            for try await streamData in stream {
+                try await Task.sleep(nanoseconds: 50_000_000)
+                message.body = streamData.content
+            }
+        } else {
+            message.body = "This feature is only available on iOS 26 or later. Please update your device to use it."
+        }
+        
+        modelContext.insert(message)
         saveContext()
     }
     
@@ -109,23 +116,26 @@ final class MessageViewModel: ObservableObject {
     }
     
     func createChatTitle(inputText: String) async throws -> String {
-//        let prompt = """
-//        The following sentence is a user-generated question.  
-//        Detect the **language** of this sentence, and create a natural **chat room title** in **that exact language only**.
-//
-//        **Follow these rules:**
-//        - The output language must match the question’s language. For example, if the question is in Japanese, the title must also be in Japanese. If it’s in English, then the title must be in English.
-//        - Do not translate. **Preserve the original input language.**
-//        - It should be a **short, one-line title** that looks like a chat title. Don’t make it too long.
-//        - Output **only one title**, with **no explanation**.
-//        - Give the title as **plain text** (no quotes, no asterisks, no formatting).
-//
-//        Question:  
-//        \(inputText)
-//        """
-//        
-//        return try await api.generateContent(prompt: prompt)
-//            .trimmingCharacters(in: .whitespacesAndNewlines)
+        if #available(iOS 26.0, *) {
+            let session = LanguageModelSession()
+            
+            let prompt = """
+                The following sentence is a user-generated question.  
+                Detect the **language** of this sentence, and create a natural **chat room title** in **that exact language only**.
+                
+                **Follow these rules:**
+                - The output language must match the question’s language. For example, if the question is in Japanese, the title must also be in Japanese. If it’s in English, then the title must be in English.
+                - Do not translate. **Preserve the original input language.**
+                - It should be a **short, one-line title** that looks like a chat title. Don’t make it too long.
+                - Output **only one title**, with **no explanation**.
+                - Give the title as **plain text** (no quotes, no asterisks, no formatting).
+                
+                Question:  
+                \(inputText)
+                """
+            
+            return try await session.respond(to: prompt).content
+        }
         
         return "New Chat"
     }

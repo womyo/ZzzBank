@@ -73,37 +73,37 @@ struct DreamonBattleView: View {
                 Alert(title: Text("Unable to Battle"))
             }
             
-//            if viewModel.isLoadingForBattleResult {
-//                ZStack {
-//                    Color.black.opacity(0.65)
-//                        .ignoresSafeArea()
-//                        .allowsHitTesting(true)
-//                    
-//                    ProgressView("Analyzing...")
-//                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-//                        .foregroundColor(.white)
-//                        .padding()
-//                }
-//            } else if viewModel.showBattleResult {
-//                ZStack {
-//                    Color.black.opacity(0.65)
-//                        .ignoresSafeArea()
-//                    
-//                    Text(viewModel.battleResultText)
-//                        .font(.system(size: 18))
-//                        .multilineTextAlignment(.center)
-//                        .padding()
-//                        .frame(maxWidth: .infinity)
-//                        .background(
-//                            RoundedRectangle(cornerRadius: 20)
-//                                .fill(.ultraThinMaterial)
-//                        )
-//                        .padding(.horizontal, 40)
-//                }
-//                .onTapGesture {
-//                    viewModel.showBattleResult = false
-//                }
-//            }
+            if viewModel.isLoadingForBattleResult {
+                ZStack {
+                    Color.black.opacity(0.65)
+                        .ignoresSafeArea()
+                        .allowsHitTesting(true)
+                    
+                    ProgressView("Analyzing...")
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .foregroundColor(.white)
+                        .padding()
+                }
+            } else if viewModel.showBattleResult {
+                ZStack {
+                    Color.black.opacity(0.65)
+                        .ignoresSafeArea()
+                    
+                    Text(viewModel.battleResultText)
+                        .font(.system(size: 18))
+                        .multilineTextAlignment(.center)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(.ultraThinMaterial)
+                        )
+                        .padding(.horizontal, 40)
+                }
+                .onTapGesture {
+                    viewModel.showBattleResult = false
+                }
+            }
         }
         .sheet(isPresented: $viewModel.isSheetPresented) {
             DreamonSheetView(viewModel: viewModel)
